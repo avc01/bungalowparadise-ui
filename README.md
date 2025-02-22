@@ -1,50 +1,90 @@
-# React + TypeScript + Vite
+# 🌟 Bungalow Paradise - Hotel Booking System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Welcome to **Bungalow Paradise**, a modern and user-friendly hotel booking system built with **React (Vite), TypeScript, Tailwind CSS, and ShadCN UI**. This project provides a seamless booking experience, enabling users to search for rooms, select dates, and confirm reservations effortlessly.
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+✅ **Fast and Responsive UI** - Powered by Vite, React, and Tailwind CSS.✅ **Modern Design** - Built with ShadCN UI for a sleek, professional look.✅ **Optimized Performance** - Using Vite for instant hot module replacement.✅ **Customizable UI Components** - Modify and extend using Tailwind CSS.✅ **Scalable Architecture** - TypeScript ensures type safety and maintainability.
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## 📦 Installation Guide
 
-- Configure the top-level `parserOptions` property like this:
+### **1️⃣ Clone the Repository**
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```sh
+git clone https://github.com/YOUR_GITHUB_USERNAME/bungalowparadise.git
+cd bungalowparadise
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+### **2️⃣ Install Dependencies**
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+Ensure you have **Node.js (v18+)** installed, then run:
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+```sh
+npm install
+```
+
+### **3️⃣ Configure Environment Variables**
+
+Create a `.env` file in the project root and set your API keys, database URLs, or other configurations (if needed):
+
+```sh
+VITE_API_URL=http://localhost:5000/api
+```
+
+### **4️⃣ Start the Development Server**
+
+```sh
+npm run dev
+```
+
+Your application will be available at [**http://localhost:5173/**](http://localhost:5173/)
+
+---
+
+## 🏗️ Project Structure
+
+```
+📂 bungalowparadise/
+├── 📂 src/            # Main application source code
+│   ├── 📂 components/  # Reusable UI components (ShadCN UI)
+│   ├── 📂 pages/       # Main pages (Home, Booking, etc.)
+│   ├── 📂 hooks/       # Custom React hooks
+│   ├── 📂 utils/       # Utility functions
+│   ├── main.tsx       # Application entry point
+│   ├── App.tsx        # Main App component
+├── 📂 public/         # Static assets
+├── tailwind.config.js # Tailwind CSS configuration
+├── tsconfig.json      # TypeScript configuration
+├── vite.config.ts     # Vite configuration
+└── package.json       # Project dependencies & scripts
+```
+
+---
+
+## 🛠️ Available Scripts
+
+### **Start Development Server**
+
+```sh
+npm run dev
+```
+
+### **Build for Production**
+
+```sh
+npm run build
+```
+
+### **Preview Production Build**
+
+```sh
+npm run preview
+```
+
+### **Lint Code**
+
+```sh
+npm run lint
 ```
