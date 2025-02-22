@@ -63,28 +63,11 @@ Your application will be available at [**http://localhost:5173/**](http://localh
 
 ---
 
-## 🛠️ Available Scripts
+## 🛠️ Required Tools
 
-### **Start Development Server**
+To run this project, ensure you have the following tools installed:
 
-```sh
-npm run dev
-```
-
-### **Build for Production**
-
-```sh
-npm run build
-```
-
-### **Preview Production Build**
-
-```sh
-npm run preview
-```
-
-### **Lint Code**
-
-```sh
-npm run lint
-```
+- **[Node.js (v18+)](https://nodejs.org/)** - Required for running JavaScript and managing dependencies.
+- **[npm](https://www.npmjs.com/)** - Comes with Node.js for installing project dependencies.
+- **[Visual Studio Code](https://code.visualstudio.com/)** - Recommended code editor for development.
+- **[Git](https://git-scm.com/)** - Required for version control and managing the repository.
