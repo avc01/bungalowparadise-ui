@@ -1,11 +1,16 @@
-import HotelReservationLanding from "./modules/HotelReservationLanding";
+import { Route, Routes } from "react-router-dom";
+import LandingPage from "./modules/landing-page/LandingPage";
+import MenuBar from "./modules/menu-bar/MenuBar";
 
 function App() {
   return (
-  //   <div className="flex flex-col items-center justify-center min-h-svh">
-  //   <Button variant="outline">Click me</Button>
-  // </div>
-    <HotelReservationLanding/>
+    <Routes>
+      <Route path="/" element={<MenuBar />}>
+        <Route index element={<LandingPage />} />
+        {/* Catch all unmatched routes */}
+        <Route path="*" element={<div>404</div>} />
+      </Route>
+    </Routes>
   );
 }
 
