@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CalendarIcon, MapPin, Search, User } from "lucide-react";
+import { CalendarIcon, Search, User } from "lucide-react";
 import { format } from "date-fns";
 import {
   Dialog,
@@ -27,13 +27,21 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Slider } from "@/components/ui/slider"
+import RoomResults from "../room-result/RoomResults"
 
 export default function LandingBodyPage() {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [checkoutDate, setCheckoutDate] = useState<Date | undefined>(
     new Date(new Date().setDate(new Date().getDate() + 1))
   );
+  const [priceRange, setPriceRange] = useState([0, 1000]);
+  const [roomType, setRoomType] = useState("all");
+  const [showResults, setShowResults] = useState(false);
+
+  const handleSearch = () => {
+    setShowResults(true);
+  };
 
   return (
     <main className="flex-1">
@@ -58,199 +66,88 @@ export default function LandingBodyPage() {
       <section className="py-8 -mt-16 relative z-30">
         <Card className="border shadow-lg">
           <CardContent className="p-6">
-            <Tabs defaultValue="hotel" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6">
-                <TabsTrigger value="hotel">Hotel</TabsTrigger>
-                <TabsTrigger value="resort">Resort</TabsTrigger>
-              </TabsList>
-              <TabsContent value="hotel" className="space-y-4">
-                <div className="grid gap-4 md:grid-cols-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="location">Location</Label>
-                    <div className="relative">
-                      <MapPin className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="location"
-                        placeholder="Where are you going?"
-                        className="pl-8"
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Check-in</Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className="w-full justify-start text-left font-normal"
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {date ? (
-                            format(date, "PPP")
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
-                        <Calendar
-                          mode="single"
-                          selected={date}
-                          onSelect={setDate}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Check-out</Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className="w-full justify-start text-left font-normal"
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {checkoutDate ? (
-                            format(checkoutDate, "PPP")
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
-                        <Calendar
-                          mode="single"
-                          selected={checkoutDate}
-                          onSelect={setCheckoutDate}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Guests</Label>
-                    <div className="grid grid-cols-2 gap-2">
-                      <Select defaultValue="2">
-                        <SelectTrigger>
-                          <SelectValue placeholder="Adults" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="1">1 Adult</SelectItem>
-                          <SelectItem value="2">2 Adults</SelectItem>
-                          <SelectItem value="3">3 Adults</SelectItem>
-                          <SelectItem value="4">4 Adults</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <Select defaultValue="0">
-                        <SelectTrigger>
-                          <SelectValue placeholder="Children" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="0">0 Children</SelectItem>
-                          <SelectItem value="1">1 Child</SelectItem>
-                          <SelectItem value="2">2 Children</SelectItem>
-                          <SelectItem value="3">3 Children</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
+            <div className="grid gap-4 md:grid-cols-4">
+              <div className="space-y-2">
+                <Label>Check-in</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start text-left font-normal"
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {format(date ?? "", "PPP")}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={date}
+                      onSelect={setDate}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div className="space-y-2">
+                <Label>Check-out</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start text-left font-normal"
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {format(checkoutDate ?? "", "PPP")}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={checkoutDate}
+                      onSelect={setCheckoutDate}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div className="space-y-2">
+                <Label>Price Range</Label>
+                <Slider
+                  min={0}
+                  max={1000}
+                  step={10}
+                  value={priceRange}
+                  onValueChange={setPriceRange}
+                  className="mt-2"
+                />
+                <div className="flex justify-between text-sm text-muted-foreground">
+                  <span>${priceRange[0]}</span>
+                  <span>${priceRange[1]}</span>
                 </div>
-                <Button className="w-full md:w-auto">
-                  <Search className="mr-2 h-4 w-4" />
-                  Search Hotels
-                </Button>
-              </TabsContent>
-              <TabsContent value="resort" className="space-y-4">
-                <div className="grid gap-4 md:grid-cols-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="resort-location">Resort Location</Label>
-                    <div className="relative">
-                      <MapPin className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="resort-location"
-                        placeholder="Find a resort"
-                        className="pl-8"
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Check-in</Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className="w-full justify-start text-left font-normal"
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {date ? (
-                            format(date, "PPP")
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
-                        <Calendar
-                          mode="single"
-                          selected={date}
-                          onSelect={setDate}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Check-out</Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className="w-full justify-start text-left font-normal"
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {checkoutDate ? (
-                            format(checkoutDate, "PPP")
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
-                        <Calendar
-                          mode="single"
-                          selected={checkoutDate}
-                          onSelect={setCheckoutDate}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Resort Type</Label>
-                    <Select defaultValue="all">
-                      <SelectTrigger>
-                        <SelectValue placeholder="All Resorts" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Resorts</SelectItem>
-                        <SelectItem value="beach">Beach Resorts</SelectItem>
-                        <SelectItem value="mountain">
-                          Mountain Resorts
-                        </SelectItem>
-                        <SelectItem value="spa">Spa Resorts</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                <Button className="w-full md:w-auto">
-                  <Search className="mr-2 h-4 w-4" />
-                  Search Resorts
-                </Button>
-              </TabsContent>
-            </Tabs>
+              </div>
+              <div className="space-y-2">
+                <Label>Room Type</Label>
+                <Select value={roomType} onValueChange={setRoomType}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Room Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Types</SelectItem>
+                    <SelectItem value="standard">Standard</SelectItem>
+                    <SelectItem value="deluxe">Deluxe</SelectItem>
+                    <SelectItem value="suite">Suite</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <Button className="w-full md:w-auto mt-4" onClick={handleSearch}>
+              <Search className="mr-2 h-4 w-4" />
+              Search Rooms
+            </Button>
           </CardContent>
         </Card>
+        {showResults && <RoomResults />}
       </section>
 
       <section className="bg-muted py-12">
