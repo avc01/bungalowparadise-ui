@@ -1,14 +1,11 @@
-import "./App.css";
-import { Button } from "@/components/ui/button";
+import HotelReservationLanding from "./modules/HotelReservationLanding";
 
 function App() {
   return (
-    <div className="min-h-screen flex-1/2 bg-grey-100">
-      <Button variant="default">Click Me</Button>
-      <Button variant="outline" className="ml-4">
-        Outline Button
-      </Button>
-    </div>
+  //   <div className="flex flex-col items-center justify-center min-h-svh">
+  //   <Button variant="outline">Click me</Button>
+  // </div>
+    <HotelReservationLanding/>
   );
 }
 
