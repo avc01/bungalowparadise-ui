@@ -53,7 +53,6 @@ export default function MenuBar() {
   const [tokenResetSuccess, setTokenResetSuccess] = useState("");
 
   const handleLogin = async () => {
-    debugger;
     setLoginError("");
     try {
       await login(loginEmail, loginPassword);
@@ -65,16 +64,13 @@ export default function MenuBar() {
       setLoginError("");
     } catch (err) {
       var exception = err as AxiosError;
-      debugger;
       setLoginError(`Error al iniciar sesión: ${exception.response?.data}`);
     }    
   };
 
   const handleSignup = async () => {
-    debugger;
     setSignupError("");
     if (signupPassword !== signupConfirmPassword) {
-      debugger;
       setSignupError("Las contraseñas no coinciden");
       return;
     }
@@ -87,7 +83,6 @@ export default function MenuBar() {
         name: signupName,
         lastname: signupLastName,
       });
-      debugger;
       setSignupDialogOpen(false);
       alert("Cuenta creada correctamente. Ahora puedes iniciar sesión.");
 
@@ -101,7 +96,6 @@ export default function MenuBar() {
       setSignupError("")
     } catch (err) {
       var exception = err as AxiosError;
-      debugger;
       setSignupError(`Error al crear cuenta: ${exception.response?.data}`);
     }
   };
@@ -124,9 +118,7 @@ export default function MenuBar() {
       setResetEmail("");
       setResetMsg("");
       setResetError("");
-      debugger;
     } catch (err) {
-      debugger;
       setResetError("Error al enviar el correo.");
     }
   };

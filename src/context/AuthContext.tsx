@@ -33,12 +33,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const fetchUser = async () => {
-    debugger;
     const token = localStorage.getItem("token");
     if (!token) return setLoading(false);
 
     try {
-      debugger;
       const res = await api.get("/api/auth/me");
       setUser(res.data);
     } catch {
