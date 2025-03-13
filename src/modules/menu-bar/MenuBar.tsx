@@ -1,7 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Menubar, MenubarMenu, MenubarTrigger } from "@/components/ui/menubar";
+import {
+  Menubar,
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarTrigger,
+} from "@/components/ui/menubar";
 import { Bed } from "lucide-react";
 import {
   Dialog,
@@ -17,9 +23,11 @@ import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
 import api from "@/lib/api";
 import { AxiosError } from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function MenuBar() {
   const { login, logout, user } = useAuth();
+  const navigate = useNavigate();
 
   const [signupDialogOpen, setSignupDialogOpen] = useState(false);
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
@@ -65,7 +73,7 @@ export default function MenuBar() {
     } catch (err) {
       var exception = err as AxiosError;
       setLoginError(`Error al iniciar sesión: ${exception.response?.data}`);
-    }    
+    }
   };
 
   const handleSignup = async () => {
@@ -87,13 +95,13 @@ export default function MenuBar() {
       alert("Cuenta creada correctamente. Ahora puedes iniciar sesión.");
 
       // Reset form fields
-      setSignupEmail("")
-      setSignupPassword("")
-      setSignupConfirmPassword("")
-      setSignupPhone("")
-      setSignupName("")
-      setSignupLastName("")
-      setSignupError("")
+      setSignupEmail("");
+      setSignupPassword("");
+      setSignupConfirmPassword("");
+      setSignupPhone("");
+      setSignupName("");
+      setSignupLastName("");
+      setSignupError("");
     } catch (err) {
       var exception = err as AxiosError;
       setSignupError(`Error al crear cuenta: ${exception.response?.data}`);
@@ -143,14 +151,22 @@ export default function MenuBar() {
       }, 3000);
 
       // Reset form fields
-      setResetToken("")
-      setNewPassword("")
-      setConfirmNewPassword("")
-      setTokenResetError("")
-      setTokenResetSuccess("")
+      setResetToken("");
+      setNewPassword("");
+      setConfirmNewPassword("");
+      setTokenResetError("");
+      setTokenResetSuccess("");
     } catch (err) {
       setTokenResetError("Token inválido o expirado.");
     }
+  };
+
+  const handleBookNow = async () => {
+    if (user) {
+      navigate("/bookings");
+    }
+
+    setLoginDialogOpen(true);
   };
 
   return (
@@ -162,19 +178,61 @@ export default function MenuBar() {
               <Bed className="h-6 w-6" />
               <span className="text-xl font-bold">Bungalow Paradise</span>
             </div>
+
             <Menubar className="ml-auto rounded-none border-0 bg-transparent">
+              {/* Página Principal */}
               <MenubarMenu>
-                <MenubarTrigger className="font-medium">
-                  Página de Inicio
+                <MenubarTrigger onClick={() => navigate("/")}>
+                  Página Principal
                 </MenubarTrigger>
               </MenubarMenu>
+              {/* Reservar Ahora */}
+              <MenubarMenu>
+                <MenubarTrigger onClick={() => handleBookNow()}>
+                  Reservar Ahora
+                </MenubarTrigger>
+              </MenubarMenu>
+
+              {/* Opciones de Usuario */}
+              {user && (
+                <MenubarMenu>
+                  <MenubarTrigger>Opciones de Usuario</MenubarTrigger>
+                  <MenubarContent>
+                    <MenubarItem onClick={() => navigate("/user/reservations")}>
+                      Administrar Reservas
+                    </MenubarItem>
+                    <MenubarItem onClick={() => navigate("/user/update-info")}>
+                      Actualizar Información Personal
+                    </MenubarItem>
+                    <MenubarItem
+                      onClick={() => navigate("/user/payment-methods")}
+                    >
+                      Ver Métodos de Pago
+                    </MenubarItem>
+                    <MenubarItem onClick={() => navigate("/user/receipts")}>
+                      Ver Recibos
+                    </MenubarItem>
+
+                    {/* Divider (optional) */}
+                    <div className="border-t my-1" />
+
+                    {/* Custom logout section */}
+                    <MenubarItem asChild>
+                      <div className="flex flex-col">
+                        <Button variant="outline" size="sm" onClick={logout}>
+                          Cerrar Sesión
+                        </Button>
+                      </div>
+                    </MenubarItem>
+                  </MenubarContent>
+                </MenubarMenu>
+              )}
             </Menubar>
             {user ? (
               <div className="ml-4 flex items-center gap-2">
-                <span className="text-sm">Hola, {user.email}</span>
-                <Button variant="outline" onClick={logout}>
-                  Cerrar Sesión
-                </Button>
+                <span className="text-sm">
+                  Hola, {user.name} {user.lastName}
+                </span>
               </div>
             ) : (
               <div className="ml-4 flex items-center gap-2">

@@ -1,9 +1,13 @@
-import { Route, Routes } from "react-router-dom";
+import { Outlet, Route, Routes } from "react-router-dom";
+import { AuthProvider } from "@/context/AuthContext";
 import LandingPage from "./modules/landing-page/LandingPage";
 import MenuBar from "./modules/menu-bar/MenuBar";
 import NotFoundPage from "./modules/not-found/NotFoundPage";
-import { AuthProvider } from "@/context/AuthContext";
 import PrivateRoute from "./components/PrivateRoute";
+import BookingsPage from "./modules/booking/BookingPage";
+import CartPage from "./modules/booking/cart/CartPage";
+import PaymentPage from "./modules/booking/payment/PaymentPage";
+import { CartProvider } from "./context/CartContext";
 
 function App() {
   return (
@@ -12,15 +16,21 @@ function App() {
         <Route path="/" element={<MenuBar />}>
           <Route index element={<LandingPage />} />
 
-          {/* Protected route */}
+          {/* Grouped /bookings routes under CartProvider */}
           <Route
-            path="/book-now"
+            path="/bookings"
             element={
               <PrivateRoute>
-                <div>my secret page!!!</div>
+                <CartProvider>
+                  <Outlet />
+                </CartProvider>
               </PrivateRoute>
             }
-          />
+          >
+            <Route index element={<BookingsPage />} />
+            <Route path="cart" element={<CartPage />} />
+            <Route path="payment" element={<PaymentPage />} />
+          </Route>
 
           {/* Catch all unmatched routes */}
           <Route path="*" element={<NotFoundPage />} />

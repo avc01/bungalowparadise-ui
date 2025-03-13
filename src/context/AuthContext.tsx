@@ -4,6 +4,8 @@ import api from "@/lib/api";
 type User = {
   id: number;
   email: string;
+  name: string;
+  lastName: string;
 };
 
 type AuthContextType = {

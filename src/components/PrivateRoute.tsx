@@ -8,11 +8,12 @@ type Props = {
 };
 
 export default function PrivateRoute({ children }: Props) {
+  debugger;
   const { user, loading } = useAuth();
 
-  if (loading) {
-    return <div className="text-center mt-10">Cargando...</div>;
-  }
+  // if (loading) {
+  //   return <div className="text-center mt-10">Cargando...</div>;
+  // }
 
   if (!user) {
     return <Navigate to="/" replace />;
