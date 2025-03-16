@@ -8,7 +8,6 @@ type Props = {
 };
 
 export default function PrivateRoute({ children }: Props) {
-  debugger;
   const { user, loading } = useAuth();
 
   // if (loading) {

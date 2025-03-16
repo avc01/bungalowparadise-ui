@@ -4,11 +4,11 @@ export type CartItem = {
   id: number
   name: string
   price: number
-  image: string
+  imageUrl: string
   checkIn: Date
   checkOut: Date
   type?: string
-  capacity?: number
+  guestsPerRoom?: number
   bathrooms?: number
 }
 

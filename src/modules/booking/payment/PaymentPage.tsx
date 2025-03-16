@@ -25,8 +25,11 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useCart, type CartItem } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
+import api from "@/lib/api";
 
 export default function PaymentPage() {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const { cartItems, getTotalPrice, clearCart } = useCart();
 
@@ -42,16 +45,20 @@ export default function PaymentPage() {
     return item.price * nights;
   };
 
+  const SendForm = () => {
+    api.post("/confirm-reservation", {})
+  }
+
   const subtotal = getTotalPrice();
   const taxesAndFees = subtotal * 0.15; // 15% for taxes and fees
   const grandTotal = subtotal + taxesAndFees;
 
   const [formStep, setFormStep] = useState(0);
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
+    firstName: user?.name ?? "",
+    lastName: user?.lastName ?? "",
+    email: user?.email ?? "",
+    phone: user?.phone ?? "",
     cardNumber: "",
     cardName: "",
     expiryMonth: "",
@@ -161,7 +168,7 @@ export default function PaymentPage() {
                       className="object-cover rounded-md"
                     /> */}
                     <img
-                      src={item.image || "/placeholder.svg"}
+                      src={item.imageUrl || "/placeholder.svg"}
                       alt={item.name}
                       className="w-full object-cover rounded-md"
                     />
@@ -237,6 +244,7 @@ export default function PaymentPage() {
                           value={formData.firstName}
                           onChange={handleInputChange}
                           required
+                          disabled
                         />
                       </div>
                       <div className="space-y-2">
@@ -247,6 +255,7 @@ export default function PaymentPage() {
                           value={formData.lastName}
                           onChange={handleInputChange}
                           required
+                          disabled
                         />
                       </div>
                     </div>
@@ -260,6 +269,7 @@ export default function PaymentPage() {
                         value={formData.email}
                         onChange={handleInputChange}
                         required
+                        disabled
                       />
                     </div>
 
@@ -272,6 +282,7 @@ export default function PaymentPage() {
                         value={formData.phone}
                         onChange={handleInputChange}
                         required
+                        disabled
                       />
                     </div>
 
@@ -381,6 +392,7 @@ export default function PaymentPage() {
                       type="submit"
                       className="w-full"
                       disabled={isSubmitting}
+                      onClick={() => SendForm()}
                     >
                       {isSubmitting ? "Processing..." : "Confirm Booking"}
                     </Button>

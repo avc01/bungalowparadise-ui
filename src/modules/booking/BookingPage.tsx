@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
@@ -28,106 +28,39 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { useCart } from "@/context/CartContext";
+import api from "@/lib/api";
 
-// Mock room data
-const roomsData = [
-  {
-    id: 1,
-    name: "Deluxe Ocean View",
-    description: "Spacious room with stunning ocean views and private balcony",
-    price: 299,
-    image: "/placeholder.svg?height=300&width=500",
-    type: "deluxe",
-    capacity: 2,
-    bathrooms: 1,
-  },
-  {
-    id: 2,
-    name: "Premium Garden Suite",
-    description: "Elegant suite overlooking our tropical gardens",
-    price: 399,
-    image: "/placeholder.svg?height=300&width=500",
-    type: "suite",
-    capacity: 3,
-    bathrooms: 1,
-  },
-  {
-    id: 3,
-    name: "Family Bungalow",
-    description: "Perfect for families with separate living area",
-    price: 499,
-    image: "/placeholder.svg?height=300&width=500",
-    type: "bungalow",
-    capacity: 4,
-    bathrooms: 2,
-  },
-  {
-    id: 4,
-    name: "Honeymoon Villa",
-    description: "Romantic villa with private plunge pool",
-    price: 599,
-    image: "/placeholder.svg?height=300&width=500",
-    type: "villa",
-    capacity: 2,
-    bathrooms: 1,
-  },
-  {
-    id: 5,
-    name: "Standard Garden View",
-    description: "Comfortable room with garden views",
-    price: 199,
-    image: "/placeholder.svg?height=300&width=500",
-    type: "standard",
-    capacity: 2,
-    bathrooms: 1,
-  },
-  {
-    id: 6,
-    name: "Beachfront Bungalow",
-    description: "Steps away from the beach with panoramic ocean views",
-    price: 699,
-    image: "/placeholder.svg?height=300&width=500",
-    type: "bungalow",
-    capacity: 3,
-    bathrooms: 2,
-  },
-  {
-    id: 7,
-    name: "Executive Suite",
-    description: "Luxurious suite with separate living area and workspace",
-    price: 449,
-    image: "/placeholder.svg?height=300&width=500",
-    type: "suite",
-    capacity: 2,
-    bathrooms: 1,
-  },
-  {
-    id: 8,
-    name: "Two-Bedroom Villa",
-    description: "Spacious villa with two bedrooms and private garden",
-    price: 799,
-    image: "/placeholder.svg?height=300&width=500",
-    type: "villa",
-    capacity: 5,
-    bathrooms: 2,
-  },
-];
+interface IRoom {
+  id: number,
+  roomNumber: number,
+  type: string,
+  price: number,
+  status: string,
+  description: string,
+  beds: number,
+  guestsPerRoom: number,
+  name: string,
+  imageUrl: string,
+  bathrooms: number,
+}
 
 export default function BookingsPage() {
   const navigate = useNavigate();
   const { addToCart, cartItems } = useCart();
 
+  const [rooms, setRooms] = useState<IRoom[]>([]);
+
   const [priceRange, setPriceRange] = useState([0, 1000]);
   const [checkInDate, setCheckInDate] = useState<Date | undefined>(undefined);
   const [checkOutDate, setCheckOutDate] = useState<Date | undefined>(undefined);
-  const [roomType, setRoomType] = useState<string>("");
+  const [roomType, setRoomType] = useState<string>("All");
 
   // Filter rooms based on search criteria
-  const filteredRooms = roomsData.filter((room) => {
+  const filteredRooms = rooms.filter((room) => {
     const matchesPrice =
       room.price >= priceRange[0] && room.price <= priceRange[1];
     const matchesType =
-      roomType === "all" || roomType === "" || room.type === roomType;
+      roomType === "All" || room.type === roomType;
     return matchesPrice && matchesType;
   });
 
@@ -135,7 +68,7 @@ export default function BookingsPage() {
     navigate("/bookings/cart");
   };
 
-  const handleAddToCart = (room: any) => {
+  const handleAddToCart = (room: IRoom) => {
     if (!checkInDate || !checkOutDate) {
       //   toast({
       //     title: "Please select dates",
@@ -163,6 +96,21 @@ export default function BookingsPage() {
       description: `${room.name} has been added to your cart`,
     });
   };
+
+  useEffect(() => {
+
+    const fetchRooms = async () => {
+      try {
+        const res = await api.get('/api/room');
+        setRooms(res.data ?? []);
+      } catch (error) {
+        console.error('Failed to fetch rooms:', error);
+        setRooms([]);
+      }
+    };
+  
+    fetchRooms();
+  }, [])
 
   return (
     <div className="py-8">
@@ -262,15 +210,13 @@ export default function BookingsPage() {
             <label className="text-sm font-medium">Room Type</label>
             <Select value={roomType} onValueChange={setRoomType}>
               <SelectTrigger>
-                <SelectValue placeholder="All room types" />
+                <SelectValue placeholder="All Rooms" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All room types</SelectItem>
-                <SelectItem value="standard">Standard</SelectItem>
-                <SelectItem value="deluxe">Deluxe</SelectItem>
-                <SelectItem value="suite">Suite</SelectItem>
-                <SelectItem value="bungalow">Bungalow</SelectItem>
-                <SelectItem value="villa">Villa</SelectItem>
+                <SelectItem value="All">All Rooms</SelectItem>
+                <SelectItem value="Single">Single</SelectItem>
+                <SelectItem value="Double">Double</SelectItem>
+                <SelectItem value="Suite">Suite</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -280,18 +226,12 @@ export default function BookingsPage() {
       {/* Room listings */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredRooms.map((room) => (
-          <Card key={room.id} className="overflow-hidden">
+          <Card key={room.id} className="overflow-hidden p-0">
             <div className="relative h-48">
-              {/* <Image
-                src={room.image || "/placeholder.svg"}
-                alt={room.name}
-                fill
-                className="object-cover"
-              /> */}
               <img
-                src={room.image || "/placeholder.svg"}
+                src={room.imageUrl || "/placeholder.svg"}
                 alt={room.name}
-                className="w-full object-cover"
+                className="w-full h-full object-cover rounded-t-md"
               />
             </div>
             <CardContent className="p-4">
@@ -308,11 +248,11 @@ export default function BookingsPage() {
               <div className="flex gap-4 mt-4">
                 <div className="flex items-center gap-1 text-sm">
                   <Users size={16} />
-                  <span>{room.capacity} guests</span>
+                  <span>{room.guestsPerRoom} guests</span>
                 </div>
                 <div className="flex items-center gap-1 text-sm">
                   <Bed size={16} />
-                  <span>{room.capacity <= 2 ? 1 : 2} beds</span>
+                  <span>{room.guestsPerRoom <= 2 ? 1 : 2} beds</span>
                 </div>
                 <div className="flex items-center gap-1 text-sm">
                   <Bath size={16} />

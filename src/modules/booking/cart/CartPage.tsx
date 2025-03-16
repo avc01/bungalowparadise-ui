@@ -108,7 +108,7 @@ export default function CartPage() {
                           className="object-cover rounded-md"
                         /> */}
                         <img
-                          src={item.image || "/placeholder.svg"}
+                          src={item.imageUrl || "/placeholder.svg"}
                           alt={item.name}
                           className="w-full object-cover rounded-md"
                         />
