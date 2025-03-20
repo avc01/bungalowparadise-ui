@@ -45,10 +45,6 @@ export default function PaymentPage() {
     return item.price * nights;
   };
 
-  const SendForm = () => {
-    api.post("/confirm-reservation", {})
-  }
-
   const subtotal = getTotalPrice();
   const taxesAndFees = subtotal * 0.15; // 15% for taxes and fees
   const grandTotal = subtotal + taxesAndFees;
@@ -81,13 +77,33 @@ export default function PaymentPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    debugger;
+    api
+      .post("/api/Reservation/confirm-reservation", {
+        userId: user?.id,
+        checkIn: cartItems[0].checkIn.toISOString(),
+        checkOut: cartItems[0].checkOut.toISOString(),
+        roomIds: cartItems.map((x) => x.id),
+        cardNumber: formData.cardNumber,
+        cardName: formData.cardName,
+        expiryMonth: formData.expiryMonth,
+        expiryYear: formData.expiryYear,
+        cVV: formData.cvv,
+        userEmail: user?.email,
+      })
+      .then((res) => {
+        debugger;
+        setIsSubmitting(false);
+        setIsComplete(true);
+        clearCart();
+      });
 
     // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setIsComplete(true);
-      clearCart();
-    }, 1500);
+    // setTimeout(() => {
+    //   setIsSubmitting(false);
+    //   setIsComplete(true);
+    //   clearCart();
+    // }, 1500);
   };
 
   const goBack = () => {
@@ -364,7 +380,7 @@ export default function PaymentPage() {
                               return (
                                 <SelectItem
                                   key={year}
-                                  value={year.toString().slice(-2)}
+                                  value={year.toString()}
                                 >
                                   {year}
                                 </SelectItem>
@@ -392,7 +408,6 @@ export default function PaymentPage() {
                       type="submit"
                       className="w-full"
                       disabled={isSubmitting}
-                      onClick={() => SendForm()}
                     >
                       {isSubmitting ? "Processing..." : "Confirm Booking"}
                     </Button>
