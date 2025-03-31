@@ -24,6 +24,7 @@ import { useState } from "react";
 import api from "@/lib/api";
 import { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 export default function MenuBar() {
   const { login, logout, user } = useAuth();
@@ -78,11 +79,43 @@ export default function MenuBar() {
 
   const handleSignup = async () => {
     setSignupError("");
-    if (signupPassword !== signupConfirmPassword) {
-      setSignupError("Las contraseñas no coinciden");
+
+    // Check for empty fields
+    if (
+      !signupEmail ||
+      !signupPassword ||
+      !signupConfirmPassword ||
+      !signupPhone ||
+      !signupName ||
+      !signupLastName
+    ) {
+      setSignupError("Todos los campos son obligatorios.");
       return;
     }
 
+    // Check if email is valid
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    if (!emailRegex.test(signupEmail)) {
+      setSignupError("Por favor, ingresa un correo electrónico válido.");
+      return;
+    }
+
+    // Check if password is strong enough (you can adjust this regex as needed)
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(signupPassword)) {
+      setSignupError(
+        "La contraseña debe tener al menos 8 caracteres, incluyendo una letra y un número."
+      );
+      return;
+    }
+
+    // Check if passwords match
+    if (signupPassword !== signupConfirmPassword) {
+      setSignupError("Las contraseñas no coinciden.");
+      return;
+    }
+
+    // Proceed to API call if all validations pass
     try {
       await api.post("/api/auth/register", {
         email: signupEmail,
@@ -91,8 +124,11 @@ export default function MenuBar() {
         name: signupName,
         lastname: signupLastName,
       });
+
       setSignupDialogOpen(false);
-      alert("Cuenta creada correctamente. Ahora puedes iniciar sesión.");
+      toast.success("Cuenta creada correctamente", {
+        description: "Ahora puedes iniciar sesión.",
+      });
 
       // Reset form fields
       setSignupEmail("");
@@ -211,6 +247,9 @@ export default function MenuBar() {
                     </MenubarItem>
                     <MenubarItem onClick={() => navigate("/user/receipts")}>
                       Ver Recibos
+                    </MenubarItem>
+                    <MenubarItem onClick={() => navigate("/user/review")}>
+                      Hacer Review
                     </MenubarItem>
 
                     {/* Divider (optional) */}

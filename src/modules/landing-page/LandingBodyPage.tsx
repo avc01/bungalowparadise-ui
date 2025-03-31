@@ -27,8 +27,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Slider } from "@/components/ui/slider"
-import RoomResults from "../room-result/RoomResults"
+import { Slider } from "@/components/ui/slider";
+import RoomResults from "../room-result/RoomResults";
 
 export default function LandingBodyPage() {
   const [date, setDate] = useState<Date | undefined>(new Date());
@@ -112,7 +112,7 @@ export default function LandingBodyPage() {
                 </Popover>
               </div>
               <div className="space-y-2">
-                <Label>Price Range</Label>
+                <Label>Rango de Precio</Label>
                 <Slider
                   min={0}
                   max={1000}
@@ -127,7 +127,7 @@ export default function LandingBodyPage() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label>Room Type</Label>
+                <Label>Tipo de Habitación</Label>
                 <Select value={roomType} onValueChange={setRoomType}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select Room Type" />
@@ -143,7 +143,7 @@ export default function LandingBodyPage() {
             </div>
             <Button className="w-full md:w-auto mt-4" onClick={handleSearch}>
               <Search className="mr-2 h-4 w-4" />
-              Search Rooms
+              Buscar
             </Button>
           </CardContent>
         </Card>
@@ -256,21 +256,21 @@ export default function LandingBodyPage() {
             {[
               {
                 name: "Sarah Johnson",
-                location: "New York",
+                location: "Nueva York",
                 quote:
-                  "The best hotel booking experience I've ever had. The staff was incredibly helpful and the room exceeded my expectations.",
+                  "La mejor experiencia de reserva de hotel que he tenido. El personal fue increíblemente útil y la habitación superó mis expectativas.",
               },
               {
                 name: "Michael Chen",
                 location: "San Francisco",
                 quote:
-                  "Bungalow Paradise made our honeymoon perfect. The resort they recommended was absolutely stunning and exactly what we wanted.",
+                  "Bungalow Paradise hizo que nuestra luna de miel fuera perfecta. El resort que nos recomendaron fue absolutamente impresionante y exactamente lo que queríamos.",
               },
               {
                 name: "Emma Williams",
-                location: "London",
+                location: "Londres",
                 quote:
-                  "I've used many hotel booking sites, but none compare to the personalized service and attention to detail that Bungalow Paradise provides.",
+                  "He utilizado muchos sitios de reservas de hoteles, pero ninguno se compara con el servicio personalizado y la atención al detalle que Bungalow Paradise ofrece.",
               },
             ].map((testimonial, index) => (
               <Card key={index} className="text-center p-6">
@@ -293,15 +293,15 @@ export default function LandingBodyPage() {
       <section className="bg-primary text-primary-foreground py-12">
         <div className="text-center">
           <h2 className="text-3xl font-bold tracking-tight mb-4">
-            Ready to Book Your Dream Vacation?
+            ¿Listo para reservar tus vacaciones soñadas?
           </h2>
           <p className="max-w-2xl mx-auto mb-6">
-            Join thousands of satisfied travelers who have found their perfect
-            getaway with Bungalow Paradise.
+            Únete a miles de viajeros satisfechos que han encontrado su escapada
+            perfecta con Bungalow Paradise.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button variant="secondary" size="lg">
-              Browse Destinations
+              Explorar destinos
             </Button>
             <Dialog>
               <DialogTrigger asChild>
@@ -310,42 +310,43 @@ export default function LandingBodyPage() {
                   size="lg"
                   className="bg-transparent text-primary-foreground border-primary-foreground hover:bg-primary-foreground hover:text-primary"
                 >
-                  Sign Up Now
+                  Regístrate ahora
                 </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                  <DialogTitle>Create an account</DialogTitle>
+                  <DialogTitle>Crear una cuenta</DialogTitle>
                   <DialogDescription>
-                    Join Bungalow Paradise to book your dream vacation
+                    Únete a Bungalow Paradise para reservar tus vacaciones
+                    soñadas
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <Label htmlFor="firstNameCta">First name</Label>
+                      <Label htmlFor="firstNameCta">Nombre</Label>
                       <Input id="firstNameCta" />
                     </div>
                     <div>
-                      <Label htmlFor="lastNameCta">Last name</Label>
+                      <Label htmlFor="lastNameCta">Apellido</Label>
                       <Input id="lastNameCta" />
                     </div>
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="emailCta">Email</Label>
+                    <Label htmlFor="emailCta">Correo electrónico</Label>
                     <Input
                       id="emailCta"
                       type="email"
-                      placeholder="your@email.com"
+                      placeholder="tu@email.com"
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="passwordCta">Password</Label>
+                    <Label htmlFor="passwordCta">Contraseña</Label>
                     <Input id="passwordCta" type="password" />
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button type="submit">Create account</Button>
+                  <Button type="submit">Crear cuenta</Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>

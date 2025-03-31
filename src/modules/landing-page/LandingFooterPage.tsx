@@ -13,18 +13,18 @@ export default function LandingFooterPage() {
               <span className="text-xl font-bold">Bungalow Paradise</span>
             </div>
             <p className="text-muted-foreground">
-              Find and book your perfect stay with ease.
+              Encuentra y reserva tu estancia perfecta con facilidad.
             </p>
           </div>
           <div>
-            <h3 className="font-semibold mb-4">Company</h3>
+            <h3 className="font-semibold mb-4">Compañía</h3>
             <ul className="space-y-2">
               <li>
                 <a
                   href="#"
                   className="text-muted-foreground hover:text-foreground"
                 >
-                  About Us
+                  Acerca de nosotros
                 </a>
               </li>
               <li>
@@ -32,7 +32,7 @@ export default function LandingFooterPage() {
                   href="#"
                   className="text-muted-foreground hover:text-foreground"
                 >
-                  Careers
+                  Carreras
                 </a>
               </li>
               <li>
@@ -48,20 +48,20 @@ export default function LandingFooterPage() {
                   href="#"
                   className="text-muted-foreground hover:text-foreground"
                 >
-                  Press
+                  Prensa
                 </a>
               </li>
             </ul>
           </div>
           <div>
-            <h3 className="font-semibold mb-4">Support</h3>
+            <h3 className="font-semibold mb-4">Soporte</h3>
             <ul className="space-y-2">
               <li>
                 <a
                   href="#"
                   className="text-muted-foreground hover:text-foreground"
                 >
-                  Help Center
+                  Centro de ayuda
                 </a>
               </li>
               <li>
@@ -69,7 +69,7 @@ export default function LandingFooterPage() {
                   href="#"
                   className="text-muted-foreground hover:text-foreground"
                 >
-                  Contact Us
+                  Contáctanos
                 </a>
               </li>
               <li>
@@ -77,7 +77,7 @@ export default function LandingFooterPage() {
                   href="#"
                   className="text-muted-foreground hover:text-foreground"
                 >
-                  Privacy Policy
+                  Política de privacidad
                 </a>
               </li>
               <li>
@@ -85,26 +85,26 @@ export default function LandingFooterPage() {
                   href="#"
                   className="text-muted-foreground hover:text-foreground"
                 >
-                  Terms of Service
+                  Términos de servicio
                 </a>
               </li>
             </ul>
           </div>
           <div>
-            <h3 className="font-semibold mb-4">Subscribe</h3>
+            <h3 className="font-semibold mb-4">Suscríbete</h3>
             <p className="text-muted-foreground mb-4">
-              Get exclusive deals and travel inspiration.
+              Obtén ofertas exclusivas e inspiración para viajar.
             </p>
             <div className="flex gap-2">
-              <Input placeholder="Your email" />
-              <Button variant="outline">Subscribe</Button>
+              <Input placeholder="Tu correo electrónico" />
+              <Button variant="outline">Suscribirse</Button>
             </div>
           </div>
         </div>
         <div className="border-t mt-8 pt-8 text-center text-muted-foreground">
           <p>
-            &copy; {new Date().getFullYear()} Bungalow Paradise. All rights
-            reserved.
+            &copy; {new Date().getFullYear()} Bungalow Paradise. Todos los
+            derechos reservados.
           </p>
         </div>
       </div>

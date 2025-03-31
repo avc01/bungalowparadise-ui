@@ -46,7 +46,7 @@ export default function PaymentPage() {
   };
 
   const subtotal = getTotalPrice();
-  const taxesAndFees = subtotal * 1.15; // 15% for taxes and fees
+  const taxesAndFees = subtotal * 0.15; // 15% for taxes and fees
   const grandTotal = subtotal + taxesAndFees;
 
   const [formStep, setFormStep] = useState(0);
@@ -83,7 +83,6 @@ export default function PaymentPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    debugger;
     api
       .post("/api/Reservation/confirm-reservation", {
         userId: user?.id,
@@ -101,18 +100,16 @@ export default function PaymentPage() {
         totalAmount: grandTotal,
       })
       .then((res) => {
-        debugger;
         setReservationRes({
           reservationId: res.data.reservationId,
           amount: res.data.amount,
-          rooms: res.data.rooms
+          rooms: res.data.rooms,
         });
         setIsSubmitting(false);
         setIsComplete(true);
         clearCart();
       })
       .catch((ex) => {
-        debugger;
         const exception = ex as AxiosError;
 
         setIsSubmitting(false);
@@ -138,12 +135,13 @@ export default function PaymentPage() {
   if (cartItems.length === 0 && !isComplete) {
     return (
       <div className="container mx-auto py-12 px-4 text-center">
-        <h1 className="text-2xl font-bold mb-4">No items to checkout</h1>
+        <h1 className="text-2xl font-bold mb-4">No hay artículos para pagar</h1>
         <p className="mb-6">
-          Your cart is empty. Please add rooms to your cart before checkout.
+          Tu carrito está vacío. Por favor, agrega habitaciones a tu carrito
+          antes de proceder al pago.
         </p>
         <Button onClick={() => navigate("/bookings")}>
-          Return to Bookings
+          Volver a las reservas
         </Button>
       </div>
     );
@@ -177,7 +175,9 @@ export default function PaymentPage() {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Monto Total</p>
-                  <p className="font-medium">${reservationRes.amount.toFixed(2)}</p>
+                  <p className="font-medium">
+                    ${reservationRes.amount.toFixed(2)}
+                  </p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Habitaciones</p>
@@ -242,16 +242,16 @@ export default function PaymentPage() {
   return (
     <div className="py-8">
       <Button variant="ghost" onClick={goBack} className="mb-6">
-        <ArrowLeft className="mr-2 h-4 w-4" /> Back
+        <ArrowLeft className="mr-2 h-4 w-4" /> Atrás
       </Button>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
           <Card>
             <CardHeader>
-              <CardTitle>Complete Your Booking</CardTitle>
+              <CardTitle>Completa tu reserva</CardTitle>
               <CardDescription>
-                Please provide your details to confirm your reservation
+                Por favor, proporciona tus datos para confirmar tu reserva
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -262,15 +262,17 @@ export default function PaymentPage() {
                 }}
               >
                 <TabsList className="grid w-full grid-cols-2 mb-8">
-                  <TabsTrigger value="guest">Guest Information</TabsTrigger>
-                  <TabsTrigger value="payment">Payment Details</TabsTrigger>
+                  <TabsTrigger value="guest">
+                    Información del huésped
+                  </TabsTrigger>
+                  <TabsTrigger value="payment">Detalles de pago</TabsTrigger>
                 </TabsList>
 
                 <form onSubmit={handleSubmit}>
                   <TabsContent value="guest" className="space-y-6">
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="firstName">First Name</Label>
+                        <Label htmlFor="firstName">Nombre</Label>
                         <Input
                           id="firstName"
                           name="firstName"
@@ -281,7 +283,7 @@ export default function PaymentPage() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="lastName">Last Name</Label>
+                        <Label htmlFor="lastName">Apellido</Label>
                         <Input
                           id="lastName"
                           name="lastName"
@@ -294,7 +296,7 @@ export default function PaymentPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="email">Email Address</Label>
+                      <Label htmlFor="email">Correo electrónico</Label>
                       <Input
                         id="email"
                         name="email"
@@ -307,7 +309,7 @@ export default function PaymentPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="phone">Phone Number</Label>
+                      <Label htmlFor="phone">Número de teléfono</Label>
                       <Input
                         id="phone"
                         name="phone"
@@ -324,13 +326,13 @@ export default function PaymentPage() {
                       className="w-full"
                       onClick={() => setFormStep(1)}
                     >
-                      Continue to Payment
+                      Continuar al pago
                     </Button>
                   </TabsContent>
 
                   <TabsContent value="payment" className="space-y-6">
                     <div className="space-y-2">
-                      <Label htmlFor="cardNumber">Card Number</Label>
+                      <Label htmlFor="cardNumber">Número de tarjeta</Label>
                       <Input
                         id="cardNumber"
                         name="cardNumber"
@@ -342,7 +344,7 @@ export default function PaymentPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="cardName">Name on Card</Label>
+                      <Label htmlFor="cardName">Nombre en la tarjeta</Label>
                       <Input
                         id="cardName"
                         name="cardName"
@@ -354,7 +356,7 @@ export default function PaymentPage() {
 
                     <div className="grid grid-cols-3 gap-4">
                       <div className="space-y-2">
-                        <Label>Expiry Month</Label>
+                        <Label>Mes de expiración</Label>
                         <Select
                           value={formData.expiryMonth}
                           onValueChange={(value) =>
@@ -381,7 +383,7 @@ export default function PaymentPage() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label>Expiry Year</Label>
+                        <Label>Año de expiración</Label>
                         <Select
                           value={formData.expiryYear}
                           onValueChange={(value) =>
@@ -418,7 +420,7 @@ export default function PaymentPage() {
                       </div>
                     </div>
 
-                    {/* Error Message */}
+                    {/* Mensaje de error */}
                     {reservationError && (
                       <div className="p-4 rounded-md bg-red-100 text-red-800 text-sm border border-red-300">
                         {reservationError}
@@ -430,7 +432,7 @@ export default function PaymentPage() {
                       className="w-full"
                       disabled={isSubmitting}
                     >
-                      {isSubmitting ? "Processing..." : "Confirm Booking"}
+                      {isSubmitting ? "Procesando..." : "Confirmar reserva"}
                     </Button>
                   </TabsContent>
                 </form>
@@ -442,7 +444,7 @@ export default function PaymentPage() {
         <div>
           <Card>
             <CardHeader>
-              <CardTitle>Booking Summary</CardTitle>
+              <CardTitle>Resumen de la reserva</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {cartItems.length > 0 && (
@@ -457,7 +459,7 @@ export default function PaymentPage() {
                         <div className="min-w-0 flex-1">
                           <h3 className="font-medium truncate">{item.name}</h3>
                           <p className="text-sm text-muted-foreground">
-                            ${item.price} × {nights} night
+                            ${item.price} × {nights} noche
                             {nights !== 1 ? "s" : ""}
                           </p>
                         </div>
@@ -478,7 +480,7 @@ export default function PaymentPage() {
                   <span>${subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span>Taxes & fees</span>
+                  <span>Impuestos y tarifas</span>
                   <span>${taxesAndFees.toFixed(2)}</span>
                 </div>
                 <Separator />

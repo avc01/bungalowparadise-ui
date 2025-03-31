@@ -12,10 +12,12 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/context/CartContext";
 import { toast } from "sonner";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function CartPage() {
   const navigate = useNavigate();
-  const { cartItems, removeFromCart, getTotalPrice, clearCart } = useCart();
+  const { cartItems, removeFromCart, getTotalPrice, clearCart, getCartDates } =
+    useCart();
 
   const totalPrice = getTotalPrice();
   const taxesAndFees = totalPrice * 0.15; // 15% for taxes and fees
@@ -27,8 +29,8 @@ export default function CartPage() {
     //   title: "Item removed",
     //   description: "The item has been removed from your cart",
     // });
-    toast.warning("Item removed", {
-      description: "The item has been removed from your cart",
+    toast.warning("Artículo eliminado", {
+      description: "El artículo ha sido eliminado de tu carrito",
     });
   };
 
@@ -39,9 +41,11 @@ export default function CartPage() {
       //     description: "Please add rooms to your cart before checking out",
       //     variant: "destructive",
       //   });
-      toast.error("Cart is empty", {
-        description: "Please add rooms to your cart before checking out",
+      toast.error("El carrito está vacío", {
+        description:
+          "Por favor, agrega habitaciones a tu carrito antes de proceder al pago",
       });
+
       return;
     }
 
@@ -55,6 +59,10 @@ export default function CartPage() {
     );
   };
 
+  // Get cart dates for display
+  const { checkIn, checkOut } = getCartDates();
+  const nights = checkIn && checkOut ? calculateNights(checkIn, checkOut) : 0;
+
   return (
     <div className="py-8">
       <Button
@@ -63,26 +71,26 @@ export default function CartPage() {
         onClick={() => navigate("/bookings")}
         className="mb-6"
       >
-        <ArrowLeft className="mr-2 h-4 w-4" /> Back to Bookings
+        <ArrowLeft className="mr-2 h-4 w-4" /> Volver a las reservas
       </Button>
 
       <div className="flex items-center gap-3 mb-8">
         <ShoppingCart className="h-6 w-6" />
-        <h1 className="text-3xl font-bold">Your Cart</h1>
+        <h1 className="text-3xl font-bold">Tu Carrito</h1>
       </div>
 
       {cartItems.length === 0 ? (
         <Card className="text-center py-12">
           <CardContent>
-            <h2 className="text-xl font-medium mb-2">Your cart is empty</h2>
+            <h2 className="text-xl font-medium mb-2">Tu carrito está vacío</h2>
             <p className="text-muted-foreground mb-6">
-              Add rooms to your cart to continue
+              Agrega habitaciones a tu carrito para continuar
             </p>
             <Button
               // onClick={() => router.push("/bookings")}
               onClick={() => navigate("/bookings")}
             >
-              Browse Rooms
+              Explorar habitaciones
             </Button>
           </CardContent>
         </Card>
@@ -91,7 +99,20 @@ export default function CartPage() {
           <div className="lg:col-span-2">
             <Card>
               <CardHeader>
-                <CardTitle>Cart Items ({cartItems.length})</CardTitle>
+                <CardTitle>
+                  Artículos en el carrito ({cartItems.length})
+                </CardTitle>
+                {checkIn && checkOut && (
+                  <Alert variant="default" className="mt-4 bg-muted">
+                    <CalendarIcon className="h-4 w-4" />
+                    <AlertDescription>
+                      Todas las habitaciones están reservadas del{" "}
+                      {format(checkIn, "MMM dd, yyyy")} al{" "}
+                      {format(checkOut, "MMM dd, yyyy")} ({nights} noche
+                      {nights !== 1 ? "s" : ""})
+                    </AlertDescription>
+                  </Alert>
+                )}
               </CardHeader>
               <CardContent className="space-y-4">
                 {cartItems.map((item, index) => {
@@ -101,12 +122,6 @@ export default function CartPage() {
                   return (
                     <div key={index} className="flex gap-4 pb-4 border-b">
                       <div className="relative h-24 w-32 flex-shrink-0">
-                        {/* <Image
-                          src={item.image || "/placeholder.svg"}
-                          alt={item.name}
-                          fill
-                          className="object-cover rounded-md"
-                        /> */}
                         <img
                           src={item.imageUrl || "/placeholder.svg"}
                           alt={item.name}
@@ -121,7 +136,7 @@ export default function CartPage() {
                           </p>
                         </div>
                         <div className="text-sm text-muted-foreground mt-1">
-                          ${item.price} per night × {nights} night
+                          ${item.price} por noche × {nights} noche
                           {nights !== 1 ? "s" : ""}
                         </div>
                         <div className="flex items-center gap-2 mt-2 text-sm">
@@ -139,7 +154,7 @@ export default function CartPage() {
                             onClick={() => handleRemoveItem(index)}
                           >
                             <Trash2 className="h-4 w-4 mr-1" />
-                            Remove
+                            Eliminar
                           </Button>
                         </div>
                       </div>
@@ -153,10 +168,10 @@ export default function CartPage() {
                   //   onClick={() => router.push("/bookings")}
                   onClick={() => navigate("/bookings")}
                 >
-                  Continue Shopping
+                  Continuar comprando
                 </Button>
                 <Button variant="ghost" onClick={() => clearCart()}>
-                  Clear Cart
+                  Vaciar carrito
                 </Button>
               </CardFooter>
             </Card>
@@ -165,7 +180,7 @@ export default function CartPage() {
           <div>
             <Card>
               <CardHeader>
-                <CardTitle>Order Summary</CardTitle>
+                <CardTitle>Resumen del pedido</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
@@ -174,7 +189,7 @@ export default function CartPage() {
                     <span>${totalPrice.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span>Taxes & fees</span>
+                    <span>Impuestos y tarifas</span>
                     <span>${taxesAndFees.toFixed(2)}</span>
                   </div>
                   <Separator />
@@ -186,7 +201,7 @@ export default function CartPage() {
               </CardContent>
               <CardFooter>
                 <Button className="w-full" onClick={handleCheckout}>
-                  Proceed to Checkout
+                  Proceder al pago
                 </Button>
               </CardFooter>
             </Card>
