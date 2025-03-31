@@ -2,7 +2,6 @@ import type React from "react";
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { format } from "date-fns";
 import { CreditCard, CheckCircle2, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,10 +26,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useCart, type CartItem } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import api from "@/lib/api";
+import { AxiosError } from "axios";
 
 export default function PaymentPage() {
-  const { user } = useAuth();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { cartItems, getTotalPrice, clearCart } = useCart();
 
   // Calculate totals
@@ -46,7 +46,7 @@ export default function PaymentPage() {
   };
 
   const subtotal = getTotalPrice();
-  const taxesAndFees = subtotal * 0.15; // 15% for taxes and fees
+  const taxesAndFees = subtotal * 1.15; // 15% for taxes and fees
   const grandTotal = subtotal + taxesAndFees;
 
   const [formStep, setFormStep] = useState(0);
@@ -64,6 +64,12 @@ export default function PaymentPage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
+  const [reservationError, setReservationError] = useState<string>();
+  const [reservationRes, setReservationRes] = useState({
+    reservationId: "",
+    rooms: 0,
+    amount: 0,
+  });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -81,21 +87,36 @@ export default function PaymentPage() {
     api
       .post("/api/Reservation/confirm-reservation", {
         userId: user?.id,
+        userEmail: user?.email,
+
         checkIn: cartItems[0].checkIn.toISOString(),
         checkOut: cartItems[0].checkOut.toISOString(),
         roomIds: cartItems.map((x) => x.id),
+
         cardNumber: formData.cardNumber,
         cardName: formData.cardName,
         expiryMonth: formData.expiryMonth,
         expiryYear: formData.expiryYear,
         cVV: formData.cvv,
-        userEmail: user?.email,
+        totalAmount: grandTotal,
       })
       .then((res) => {
         debugger;
+        setReservationRes({
+          reservationId: res.data.reservationId,
+          amount: res.data.amount,
+          rooms: res.data.rooms
+        });
         setIsSubmitting(false);
         setIsComplete(true);
         clearCart();
+      })
+      .catch((ex) => {
+        debugger;
+        const exception = ex as AxiosError;
+
+        setIsSubmitting(false);
+        setReservationError(exception.response?.data as string);
       });
 
     // Simulate API call
@@ -134,9 +155,9 @@ export default function PaymentPage() {
         <Card className="border-green-200">
           <CardHeader className="text-center">
             <CheckCircle2 className="mx-auto h-16 w-16 text-green-500 mb-4" />
-            <CardTitle className="text-2xl">Booking Confirmed!</CardTitle>
+            <CardTitle className="text-2xl">¡Reserva Confirmada!</CardTitle>
             <CardDescription>
-              Your reservation has been successfully processed
+              Tu reserva ha sido procesada exitosamente
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -144,45 +165,38 @@ export default function PaymentPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm text-muted-foreground">
-                    Booking Reference
+                    Referencia de Reserva
                   </p>
-                  <p className="font-medium">
-                    {Math.random().toString(36).substring(2, 10).toUpperCase()}
-                  </p>
+                  <p className="font-medium">{reservationRes.reservationId}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Guest</p>
+                  <p className="text-sm text-muted-foreground">Huésped</p>
                   <p className="font-medium">
                     {formData.firstName} {formData.lastName}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Total Amount</p>
-                  <p className="font-medium">${grandTotal.toFixed(2)}</p>
+                  <p className="text-sm text-muted-foreground">Monto Total</p>
+                  <p className="font-medium">${reservationRes.amount.toFixed(2)}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Items</p>
+                  <p className="text-sm text-muted-foreground">Habitaciones</p>
                   <p className="font-medium">
-                    {cartItems.length} room{cartItems.length !== 1 ? "s" : ""}
+                    {reservationRes.rooms} habitación
+                    {reservationRes.rooms !== 1 ? "es" : ""}
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="space-y-4">
-              <h3 className="font-medium">Booking Details</h3>
+            {/* <div className="space-y-4">
+              <h3 className="font-medium">Detalles de la Reserva</h3>
               {cartItems.map((item, index) => (
                 <div
                   key={index}
                   className="flex gap-4 items-center border-b pb-4 last:border-0 last:pb-0"
                 >
                   <div className="relative h-16 w-24 flex-shrink-0">
-                    {/* <Image
-                      src={item.image || "/placeholder.svg"}
-                      alt={item.name}
-                      fill
-                      className="object-cover rounded-md"
-                    /> */}
                     <img
                       src={item.imageUrl || "/placeholder.svg"}
                       alt={item.name}
@@ -192,12 +206,15 @@ export default function PaymentPage() {
                   <div className="flex-1">
                     <h4 className="font-medium">{item.name}</h4>
                     <div className="text-sm text-muted-foreground">
-                      {format(item.checkIn, "MMM dd, yyyy")} -{" "}
-                      {format(item.checkOut, "MMM dd, yyyy")}
+                      {format(item.checkIn, "dd MMM yyyy")} -{" "}
+                      {format(item.checkOut, "dd MMM yyyy")}
                     </div>
                     <div className="text-sm">
-                      ${item.price}/night ×{" "}
-                      {calculateNights(item.checkIn, item.checkOut)} nights
+                      ${item.price}/noche ×{" "}
+                      {calculateNights(item.checkIn, item.checkOut)} noche
+                      {calculateNights(item.checkIn, item.checkOut) !== 1
+                        ? "s"
+                        : ""}
                     </div>
                   </div>
                   <div className="font-medium">
@@ -205,16 +222,16 @@ export default function PaymentPage() {
                   </div>
                 </div>
               ))}
-            </div>
+            </div> */}
 
             <div className="text-center text-muted-foreground">
-              <p>A confirmation email has been sent to {formData.email}</p>
-              <p>We look forward to welcoming you to BungalowParadise!</p>
+              <p>Se ha enviado un correo de confirmación a {formData.email}</p>
+              <p>¡Esperamos darte la bienvenida en BungalowParadise!</p>
             </div>
           </CardContent>
           <CardFooter>
             <Button className="w-full" onClick={() => navigate("/bookings")}>
-              Return to Bookings
+              Volver a Reservas
             </Button>
           </CardFooter>
         </Card>
@@ -378,10 +395,7 @@ export default function PaymentPage() {
                             {Array.from({ length: 10 }, (_, i) => {
                               const year = new Date().getFullYear() + i;
                               return (
-                                <SelectItem
-                                  key={year}
-                                  value={year.toString()}
-                                >
+                                <SelectItem key={year} value={year.toString()}>
                                   {year}
                                 </SelectItem>
                               );
@@ -403,6 +417,13 @@ export default function PaymentPage() {
                         />
                       </div>
                     </div>
+
+                    {/* Error Message */}
+                    {reservationError && (
+                      <div className="p-4 rounded-md bg-red-100 text-red-800 text-sm border border-red-300">
+                        {reservationError}
+                      </div>
+                    )}
 
                     <Button
                       type="submit"
