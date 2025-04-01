@@ -44,6 +44,7 @@ interface IRoom {
   name: string;
   imageUrl: string;
   bathrooms: number;
+  reservedDateRanges: [string, string][];
 }
 
 export default function BookingsPage() {
@@ -68,12 +69,33 @@ export default function BookingsPage() {
     }
   }, [cartItems, getCartDates]);
 
-  // Filter rooms based on search criteria
+  // Filter rooms based on search criteria and availability for the selected dates
   const filteredRooms = rooms.filter((room) => {
     const matchesPrice =
       room.price >= priceRange[0] && room.price <= priceRange[1];
     const matchesType = roomType === "All" || room.type === roomType;
-    return matchesPrice && matchesType;
+
+    // By default, assume the room is available.
+    let isAvailable = true;
+
+    // Only filter by availability if both dates are selected.
+    if (checkInDate && checkOutDate) {
+      isAvailable = room.reservedDateRanges.every((range) => {
+        // Assume each range is [reservedCheckIn, reservedCheckOut]
+        const [reservedCheckIn, reservedCheckOut] = range;
+        // Convert reserved dates to Date objects (if they aren't already)
+        const reservedIn = new Date(reservedCheckIn);
+        const reservedOut = new Date(reservedCheckOut);
+        // There is no conflict if the selected check-out is on or before the reserved check-in,
+        // OR the selected check-in is on or after the reserved check-out.
+        return (
+          checkOutDate.getTime() <= reservedIn.getTime() ||
+          checkInDate.getTime() >= reservedOut.getTime()
+        );
+      });
+    }
+
+    return matchesPrice && matchesType && isAvailable;
   });
 
   const goToCart = () => {
