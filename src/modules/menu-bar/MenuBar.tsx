@@ -8,7 +8,7 @@ import {
   MenubarMenu,
   MenubarTrigger,
 } from "@/components/ui/menubar";
-import { Bed } from "lucide-react";
+import { Bed, BotMessageSquare, CircleX } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -25,10 +25,13 @@ import api from "@/lib/api";
 import { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import ChatWindow from "../smart-chat/ChatWindow";
 
 export default function MenuBar() {
   const { login, logout, user } = useAuth();
   const navigate = useNavigate();
+
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const [signupDialogOpen, setSignupDialogOpen] = useState(false);
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
@@ -214,7 +217,6 @@ export default function MenuBar() {
               <Bed className="h-6 w-6" />
               <span className="text-xl font-bold">Bungalow Paradise</span>
             </div>
-
             <Menubar className="ml-auto rounded-none border-0 bg-transparent">
               {/* Página Principal */}
               <MenubarMenu>
@@ -540,6 +542,23 @@ export default function MenuBar() {
         <main className="flex-grow">
           <Outlet />
         </main>
+
+        {/* Floating Chat Button & Window */}
+        <div className="fixed bottom-6 right-6 z-50">
+          {isChatOpen ? (
+            <div className="w-[380px] h-[520px] bg-white shadow-2xl rounded-xl border border-gray-300 flex flex-col overflow-hidden">
+              <ChatWindow setIsChatOpen={setIsChatOpen} />
+            </div>
+          ) : (
+            <Button
+              onClick={() => setIsChatOpen(true)}
+              variant="outline"
+              className="bg-gray-900 hover:bg-gray-800 text-white rounded-full w-16 h-16 shadow-lg flex items-center justify-center gap-1"
+            >
+              <BotMessageSquare className="w-6 h-6" />
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );
