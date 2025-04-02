@@ -1,14 +1,20 @@
 import { Button } from "@/components/ui/button";
 import { useChatStream } from "@/lib/useChatStream";
 import { BotMessageSquare, CircleX } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 interface IChatWindow {
   setIsChatOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const ChatWindow: React.FC<IChatWindow> = ({ setIsChatOpen }) => {
-  const { messages, sendMessage, isLoading } = useChatStream();
+  const messageEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const { messages, sendMessage, isLoading, isAssistantTyping } = useChatStream(
+    messageEndRef,
+    inputRef
+  );
   const [input, setInput] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -38,7 +44,7 @@ const ChatWindow: React.FC<IChatWindow> = ({ setIsChatOpen }) => {
         </Button>
       </div>
 
-      {/* Scrollable message list */}
+      {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4">
         {messages.map((msg, i) => (
           <div
@@ -50,22 +56,37 @@ const ChatWindow: React.FC<IChatWindow> = ({ setIsChatOpen }) => {
             <span
               className={`inline-block px-4 py-2 rounded-xl text-sm ${
                 msg.role === "user"
-                  ? "bg-gray-900 text-white"
-                  : "bg-gray-100 text-black"
+                  ? "bg-black text-white"
+                  : "bg-gray-100 text-black animate-fade-in"
               }`}
             >
               {msg.content}
+              {msg.timestamp && (
+                <div className="text-[10px] text-gray-400 mt-1 text-right">
+                  {new Date(msg.timestamp).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </div>
+              )}
             </span>
           </div>
         ))}
+        {isAssistantTyping && (
+          <div className="text-left text-gray-500 text-sm italic animate-pulse mb-2">
+            El asistente está escribiendo...
+          </div>
+        )}
+        <div ref={messageEndRef} />
       </div>
 
-      {/* Footer input bar (Fixed height) */}
+      {/* Input */}
       <form
         onSubmit={handleSubmit}
         className="shrink-0 flex p-3 border-t border-gray-300"
       >
         <input
+          ref={inputRef}
           type="text"
           className="flex-1 border border-gray-300 rounded-lg px-3 py-2 mr-2 focus:outline-none focus:ring-2 focus:ring-gray-400"
           value={input}
@@ -74,7 +95,7 @@ const ChatWindow: React.FC<IChatWindow> = ({ setIsChatOpen }) => {
         />
         <button
           type="submit"
-          className="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition disabled:opacity-50"
+          className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition disabled:opacity-50"
           disabled={isLoading}
         >
           Enviar
