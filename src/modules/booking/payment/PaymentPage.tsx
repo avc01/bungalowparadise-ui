@@ -1,6 +1,6 @@
 import type React from "react";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CreditCard, CheckCircle2, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -48,6 +48,8 @@ export default function PaymentPage() {
   const subtotal = getTotalPrice();
   const taxesAndFees = subtotal * 0.15; // 15% for taxes and fees
   const grandTotal = subtotal + taxesAndFees;
+
+  const [disableCardForm, setDisableCardForm] = useState(false);
 
   const [formStep, setFormStep] = useState(0);
   const [formData, setFormData] = useState({
@@ -131,6 +133,24 @@ export default function PaymentPage() {
       navigate("/bookings/cart");
     }
   };
+
+  useEffect(() => {
+    api
+      .get(`api/CardDetail/user-card?userId=${user?.id}&masked=${false}`)
+      .then((res) => {
+        setFormData((prevData) => ({
+          ...prevData, // Retain all existing properties
+          cardNumber: res.data.cardNumber.replace(/(\d{4})(?=\d)/g, "$1-"),
+          cardName: res.data.cardHolder,
+          expiryMonth: res.data.expiryMonth,
+          expiryYear: res.data.expiryYear,
+          cvv: res.data.cvv,
+        }));
+
+        setDisableCardForm(true);
+      })
+      .catch();
+  }, []);
 
   if (cartItems.length === 0 && !isComplete) {
     return (
@@ -340,6 +360,7 @@ export default function PaymentPage() {
                         value={formData.cardNumber}
                         onChange={handleInputChange}
                         required
+                        disabled={disableCardForm}
                       />
                     </div>
 
@@ -351,6 +372,7 @@ export default function PaymentPage() {
                         value={formData.cardName}
                         onChange={handleInputChange}
                         required
+                        disabled={disableCardForm}
                       />
                     </div>
 
@@ -362,6 +384,7 @@ export default function PaymentPage() {
                           onValueChange={(value) =>
                             handleSelectChange("expiryMonth", value)
                           }
+                          disabled={disableCardForm}
                         >
                           <SelectTrigger>
                             <SelectValue placeholder="MM" />
@@ -389,6 +412,7 @@ export default function PaymentPage() {
                           onValueChange={(value) =>
                             handleSelectChange("expiryYear", value)
                           }
+                          disabled={disableCardForm}
                         >
                           <SelectTrigger>
                             <SelectValue placeholder="YY" />
@@ -416,6 +440,7 @@ export default function PaymentPage() {
                           value={formData.cvv}
                           onChange={handleInputChange}
                           required
+                          disabled={disableCardForm}
                         />
                       </div>
                     </div>

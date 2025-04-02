@@ -237,19 +237,13 @@ export default function MenuBar() {
                     <MenubarItem onClick={() => navigate("/user/reservations")}>
                       Administrar Reservas
                     </MenubarItem>
-                    <MenubarItem onClick={() => navigate("/user/update-info")}>
-                      Actualizar Información Personal
-                    </MenubarItem>
                     <MenubarItem
                       onClick={() => navigate("/user/payment-methods")}
                     >
                       Ver Métodos de Pago
                     </MenubarItem>
-                    <MenubarItem onClick={() => navigate("/user/receipts")}>
-                      Ver Recibos
-                    </MenubarItem>
                     <MenubarItem onClick={() => navigate("/user/review")}>
-                      Hacer Review
+                      Compartir Review
                     </MenubarItem>
 
                     {/* Divider (optional) */}

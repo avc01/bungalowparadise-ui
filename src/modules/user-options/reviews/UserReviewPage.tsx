@@ -1,11 +1,9 @@
-"use client";
-
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import UserReview from "./UserReview";
 import { useNavigate } from "react-router-dom";
 
-export default function ReviewsPage() {
+export default function UserReviewPage() {
   const navigate = useNavigate();
 
   return (

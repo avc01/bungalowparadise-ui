@@ -10,10 +10,8 @@ import PaymentPage from "./modules/booking/payment/PaymentPage";
 import { CartProvider } from "./context/CartContext";
 import { Toaster } from "@/components/ui/sonner";
 import UserReservations from "./modules/user-options/UserReservations";
-import UpdateUserInfo from "./modules/user-options/UpdateUserInfo";
-import PaymentMethods from "./modules/user-options/PaymentMethods";
-import UserReceipts from "./modules/user-options/UserReceipts";
-import ReviewsPage from "./modules/user-options/reviews/ReviewsPage";
+import PaymentMethodPage from "./modules/user-options/cards/PaymentMethodPage";
+import UserReviewPage from "./modules/user-options/reviews/UserReviewPage";
 
 function App() {
   return (
@@ -49,26 +47,10 @@ function App() {
             }
           />
           <Route
-            path="/user/update-info"
-            element={
-              <PrivateRoute>
-                <UpdateUserInfo />
-              </PrivateRoute>
-            }
-          />
-          <Route
             path="/user/payment-methods"
             element={
               <PrivateRoute>
-                <PaymentMethods />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/user/receipts"
-            element={
-              <PrivateRoute>
-                <UserReceipts />
+                <PaymentMethodPage />
               </PrivateRoute>
             }
           />
@@ -76,7 +58,7 @@ function App() {
             path="/user/review"
             element={
               <PrivateRoute>
-                <ReviewsPage />
+                <UserReviewPage />
               </PrivateRoute>
             }
           />
