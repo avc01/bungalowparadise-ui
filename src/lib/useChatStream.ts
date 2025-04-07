@@ -47,7 +47,7 @@ export const useChatStream = (
       );
 
       const reader = res.body?.getReader();
-      const decoder = new TextDecoder();
+      const decoder = new TextDecoder("utf-8", { fatal: false });
       let assistantMessage = "";
       const assistantIndex = updatedMessages.length;
 
@@ -63,17 +63,16 @@ export const useChatStream = (
         while (!done) {
           const { value, done: doneReading } = await reader.read();
           done = doneReading;
+
           if (value) {
-            const chunk = decoder.decode(value);
+            const chunk = decoder.decode(value, { stream: true }); // ✅ critical fix
             assistantMessage += chunk;
 
-            // Animate text update
             setMessages((prev) => {
               const updated = [...prev];
               updated[assistantIndex] = {
-                role: "assistant",
-                content: assistantMessage,
-                timestamp: new Date(),
+                ...updated[assistantIndex],
+                content: updated[assistantIndex].content + chunk,
               };
               return updated;
             });
@@ -92,6 +91,6 @@ export const useChatStream = (
     isLoading,
     sendMessage,
     setMessages,
-    isAssistantTyping
+    isAssistantTyping,
   };
 };

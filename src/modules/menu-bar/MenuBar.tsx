@@ -8,7 +8,7 @@ import {
   MenubarMenu,
   MenubarTrigger,
 } from "@/components/ui/menubar";
-import { Bed, BotMessageSquare, CircleX } from "lucide-react";
+import { Bed, BotMessageSquare } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -547,8 +547,18 @@ export default function MenuBar() {
         {/* Floating Chat Button & Window */}
         <div className="fixed bottom-6 right-6 z-50">
           {isChatOpen ? (
-            <div className="w-[380px] h-[520px] bg-white shadow-2xl rounded-xl border border-gray-300 flex flex-col overflow-hidden">
-              <ChatWindow setIsChatOpen={setIsChatOpen} />
+            <div
+              className={`fixed bottom-6 right-6 z-50 ${
+                isExpanded ? "w-[500px] h-[700px]" : "w-[380px] h-[520px]"
+              } transition-all duration-300`}
+            >
+              <div className="bg-white shadow-2xl rounded-xl border border-gray-300 flex flex-col h-full overflow-hidden">
+                <ChatWindow
+                  setIsChatOpen={setIsChatOpen}
+                  isExpanded={isExpanded}
+                  setIsExpanded={setIsExpanded}
+                />
+              </div>
             </div>
           ) : (
             <Button

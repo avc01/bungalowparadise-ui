@@ -1,13 +1,19 @@
 import { Button } from "@/components/ui/button";
 import { useChatStream } from "@/lib/useChatStream";
-import { BotMessageSquare, CircleX } from "lucide-react";
+import { BotMessageSquare, CircleX, Maximize2, Minimize2 } from "lucide-react";
 import { useRef, useState } from "react";
 
 interface IChatWindow {
   setIsChatOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  isExpanded: boolean;
+  setIsExpanded: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const ChatWindow: React.FC<IChatWindow> = ({ setIsChatOpen }) => {
+const ChatWindow: React.FC<IChatWindow> = ({
+  setIsChatOpen,
+  isExpanded,
+  setIsExpanded,
+}) => {
   const messageEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -34,14 +40,24 @@ const ChatWindow: React.FC<IChatWindow> = ({ setIsChatOpen }) => {
           <BotMessageSquare className="w-4 h-4" />
           <span>Asistente Virtual Inteligente</span>
         </div>
-        <Button
-          onClick={() => setIsChatOpen(false)}
-          className="text-white hover:text-gray-300 p-1"
-          size="icon"
-          variant="ghost"
-        >
-          <CircleX className="w-5 h-5" />
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            onClick={() => setIsExpanded((prev) => !prev)}
+            className="text-white hover:text-gray-300 p-1"
+            size="icon"
+            variant="ghost"
+          >
+            {isExpanded ? <Minimize2 /> : <Maximize2 />}
+          </Button>
+          <Button
+            onClick={() => setIsChatOpen(false)}
+            className="text-white hover:text-gray-300 p-1"
+            size="icon"
+            variant="ghost"
+          >
+            <CircleX className="w-5 h-5" />
+          </Button>
+        </div>
       </div>
 
       {/* Messages */}
