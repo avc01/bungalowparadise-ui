@@ -290,7 +290,7 @@ export default function LandingBodyPage() {
         </div>
       </section>
 
-      <section className="bg-primary text-primary-foreground py-12">
+      {/* <section className="bg-primary text-primary-foreground py-12">
         <div className="text-center">
           <h2 className="text-3xl font-bold tracking-tight mb-4">
             ¿Listo para reservar tus vacaciones soñadas?
@@ -303,7 +303,7 @@ export default function LandingBodyPage() {
             <Button variant="secondary" size="lg">
               Explorar destinos
             </Button>
-            <Dialog>
+              <Dialog>
               <DialogTrigger asChild>
                 <Button
                   variant="outline"
@@ -352,7 +352,7 @@ export default function LandingBodyPage() {
             </Dialog>
           </div>
         </div>
-      </section>
+      </section> */}
     </main>
   );
 }

@@ -25,7 +25,6 @@ const ChatWindow: React.FC<IChatWindow> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    debugger;
     if (input.trim()) {
       sendMessage(input);
       setInput("");

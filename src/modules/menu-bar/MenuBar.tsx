@@ -211,7 +211,7 @@ export default function MenuBar() {
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col flex-grow">
+      <div className="w-full max-w-[1800px] mx-auto px-8 lg:px-16 flex flex-col flex-grow">
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <div className="w-full flex h-16 items-center">
             <div className="mr-4 flex items-center gap-2">

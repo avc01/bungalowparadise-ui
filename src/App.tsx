@@ -9,9 +9,9 @@ import CartPage from "./modules/booking/cart/CartPage";
 import PaymentPage from "./modules/booking/payment/PaymentPage";
 import { CartProvider } from "./context/CartContext";
 import { Toaster } from "@/components/ui/sonner";
-import UserReservations from "./modules/user-options/UserReservations";
 import PaymentMethodPage from "./modules/user-options/cards/PaymentMethodPage";
 import UserReviewPage from "./modules/user-options/reviews/UserReviewPage";
+import ReservationsPage from "./modules/user-options/reservations/ReservationPage";
 
 function App() {
   return (
@@ -42,7 +42,7 @@ function App() {
             path="/user/reservations"
             element={
               <PrivateRoute>
-                <UserReservations />
+                <ReservationsPage />
               </PrivateRoute>
             }
           />

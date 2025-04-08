@@ -28,7 +28,6 @@ export const useChatStream = (
 
   const sendMessage = useCallback(
     async (userMessage: string) => {
-      debugger;
       const updatedMessages: Message[] = [
         ...messages,
         { role: "user", content: userMessage, timestamp: new Date() },
@@ -38,7 +37,7 @@ export const useChatStream = (
       setIsLoading(true);
 
       const res = await fetch(
-        "https://localhost:44353/api/SmartAIChat/stream",
+        "https://localhost:5001/api/SmartAIChat/stream",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
