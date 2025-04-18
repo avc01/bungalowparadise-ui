@@ -32,27 +32,27 @@ const ChatWindow: React.FC<IChatWindow> = ({
   };
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Header (Fixed height) */}
-      <div className="shrink-0 bg-gray-900 text-white px-4 py-2 text-sm font-semibold flex justify-between items-center">
-        <div className="flex items-center gap-2">
+    <div className="flex flex-col h-full bg-background border border-border rounded-xl overflow-hidden shadow-xl">
+      {/* Header */}
+      <div className="shrink-0 bg-muted/80 backdrop-blur px-4 py-2 border-b border-border text-sm font-semibold flex justify-between items-center">
+        <div className="flex items-center gap-2 text-primary">
           <BotMessageSquare className="w-4 h-4" />
-          <span>Asistente Virtual Inteligente</span>
+          <span>Asistente Virtual</span>
         </div>
         <div className="flex gap-2">
           <Button
             onClick={() => setIsExpanded((prev) => !prev)}
-            className="text-white hover:text-gray-300 p-1"
             size="icon"
             variant="ghost"
+            className="text-muted-foreground hover:text-foreground"
           >
             {isExpanded ? <Minimize2 /> : <Maximize2 />}
           </Button>
           <Button
             onClick={() => setIsChatOpen(false)}
-            className="text-white hover:text-gray-300 p-1"
             size="icon"
             variant="ghost"
+            className="text-muted-foreground hover:text-destructive"
           >
             <CircleX className="w-5 h-5" />
           </Button>
@@ -60,24 +60,24 @@ const ChatWindow: React.FC<IChatWindow> = ({
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className="flex-1 overflow-y-auto p-4 space-y-2 text-sm">
         {messages.map((msg, i) => (
           <div
             key={i}
-            className={`mb-2 ${
-              msg.role === "user" ? "text-right" : "text-left"
+            className={`flex ${
+              msg.role === "user" ? "justify-end" : "justify-start"
             }`}
           >
             <span
-              className={`inline-block px-4 py-2 rounded-xl text-sm ${
+              className={`max-w-xs md:max-w-md px-4 py-2 rounded-2xl whitespace-pre-line ${
                 msg.role === "user"
-                  ? "bg-black text-white"
-                  : "bg-gray-100 text-black animate-fade-in"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-foreground animate-fade-in"
               }`}
             >
               {msg.content}
               {msg.timestamp && (
-                <div className="text-[10px] text-gray-400 mt-1 text-right">
+                <div className="text-[10px] text-muted-foreground mt-1 text-right">
                   {new Date(msg.timestamp).toLocaleTimeString([], {
                     hour: "2-digit",
                     minute: "2-digit",
@@ -88,7 +88,7 @@ const ChatWindow: React.FC<IChatWindow> = ({
           </div>
         ))}
         {isAssistantTyping && (
-          <div className="text-left text-gray-500 text-sm italic animate-pulse mb-2">
+          <div className="text-left text-muted-foreground text-sm italic animate-pulse">
             El asistente está escribiendo...
           </div>
         )}
@@ -98,23 +98,23 @@ const ChatWindow: React.FC<IChatWindow> = ({
       {/* Input */}
       <form
         onSubmit={handleSubmit}
-        className="shrink-0 flex p-3 border-t border-gray-300"
+        className="shrink-0 flex items-center gap-2 border-t border-border bg-background px-4 py-3"
       >
         <input
           ref={inputRef}
           type="text"
-          className="flex-1 border border-gray-300 rounded-lg px-3 py-2 mr-2 focus:outline-none focus:ring-2 focus:ring-gray-400"
+          className="flex-1 bg-muted border border-border rounded-lg px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-accent"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Escribe tu mensaje..."
         />
-        <button
+        <Button
           type="submit"
-          className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition disabled:opacity-50"
+          className="bg-primary text-primary-foreground hover:bg-primary/90 transition"
           disabled={isLoading}
         >
           Enviar
-        </button>
+        </Button>
       </form>
     </div>
   );
