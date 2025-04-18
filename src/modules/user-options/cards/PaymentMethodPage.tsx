@@ -7,7 +7,7 @@ export default function PaymentMethodPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="py-12 px-6 max-w-4xl mx-auto">
+    <div className="py-12 px-6 max-w-5xl mx-auto">
       <Button
         variant="ghost"
         onClick={() => navigate("/")}

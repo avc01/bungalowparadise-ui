@@ -110,112 +110,104 @@ export default function ReservationCard({
   return (
     <>
       <Card
-        className={`overflow-hidden p-0 ${
-          reservation.status === "Confirmed" ? "border-primary" : ""
+        className={`overflow-hidden rounded-xl border shadow-md transition ${
+          reservation.status === "Confirmed" ? "border-accent" : "border-border"
         }`}
       >
-        <div className="p-4">
-          <div className="flex flex-col h-full">
+        <div className="p-5 flex flex-col h-full space-y-4">
+          <div className="flex justify-between items-start gap-4">
             <div>
-              <div className="flex justify-between items-start">
+              <h3 className="text-xl font-bold tracking-tight">
+                {reservation.rooms.length > 1
+                  ? `Reservación (${reservation.rooms.length} habitaciones)`
+                  : reservation.rooms[0].name}
+              </h3>
+              <div className="flex items-center text-sm text-muted-foreground mt-1">
+                <MapPin className="h-4 w-4 mr-1" />
+                <span>{reservation.location}</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <p className="font-semibold text-lg text-primary">
+                ${reservation.totalPrice.toFixed(2)}
+              </p>
+              <Badge className={getStatusColor(reservation.status)}>
+                {getStatusLabel(reservation.status)}
+              </Badge>
+            </div>
+          </div>
+
+          {/* Lista de habitaciones si hay más de una */}
+          {reservation.rooms.length > 1 && (
+            <div className="border-l-2 border-muted pl-4">
+              <p className="text-sm font-medium mb-2 text-muted-foreground">
+                Habitaciones incluidas:
+              </p>
+              <ul className="space-y-1 text-sm text-foreground">
+                {reservation.rooms.map((room, index) => (
+                  <li key={index}>• {room.name}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div className="flex items-start">
+              <Calendar className="h-4 w-4 mt-1 mr-2 text-muted-foreground" />
+              <div>
                 <div>
-                  <h3 className="text-xl font-semibold">
-                    {reservation.rooms.length > 1
-                      ? `Reservación (${reservation.rooms.length} habitaciones)`
-                      : reservation.rooms[0].name}
-                  </h3>
-                  <div className="flex items-center text-sm text-muted-foreground mt-1">
-                    <MapPin className="h-3.5 w-3.5 mr-1" />
-                    <span>{reservation.location}</span>
-                  </div>
+                  Check-in: {format(reservation.checkIn, "MMM dd, yyyy")}
                 </div>
-                <div className="flex items-center">
-                  <p className="font-medium mr-2">
-                    ${reservation.totalPrice.toFixed(2)}
-                  </p>
-                  <Badge className={getStatusColor(reservation.status)}>
-                    {getStatusLabel(reservation.status)}
-                  </Badge>
-                </div>
-              </div>
-
-              {/* Lista de habitaciones si hay más de una */}
-              {reservation.rooms.length > 1 && (
-                <div className="mt-3 border-l-2 border-muted pl-3">
-                  <p className="text-sm font-medium mb-1">
-                    Habitaciones en esta reservación:
-                  </p>
-                  <ul className="space-y-1">
-                    {reservation.rooms.map((room, index) => (
-                      <li key={index} className="text-sm">
-                        {room.name}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-3">
-                <div className="flex items-center text-sm">
-                  <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
-                  <div>
-                    <div>
-                      Check-in: {format(reservation.checkIn, "MMM dd, yyyy")}
-                    </div>
-                    <div>
-                      Check-out: {format(reservation.checkOut, "MMM dd, yyyy")}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center text-sm">
-                  <Users className="h-4 w-4 mr-2 text-muted-foreground" />
-                  <div>
-                    <div>
-                      {reservation.numberOfGuests} huésped
-                      {reservation.numberOfGuests !== 1 ? "es" : ""}
-                    </div>
-                    <div>
-                      {nights} noche{nights !== 1 ? "s" : ""}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-3 text-sm">
-                <div className="flex items-center">
-                  <CreditCard className="h-4 w-4 mr-2 text-muted-foreground" />
-                  <span>Confirmación: BP-{reservation.reservationId}</span>
+                <div>
+                  Check-out: {format(reservation.checkOut, "MMM dd, yyyy")}
                 </div>
               </div>
             </div>
 
-            {!isPast && (
-              <div className="pt-4 mt-auto">
-                {canCancel ? (
-                  <Button
-                    variant="outline"
-                    className="text-destructive border-destructive hover:bg-destructive/10"
-                    onClick={() => setShowCancelDialog(true)}
-                  >
-                    Cancelar reservación
-                  </Button>
-                ) : (
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <AlertTriangle className="h-4 w-4 mr-2" />
-                    <span>
-                      Las reservaciones activas no pueden cancelarse en línea.
-                      Por favor contacte a recepción.
-                    </span>
-                  </div>
-                )}
+            <div className="flex items-start">
+              <Users className="h-4 w-4 mt-1 mr-2 text-muted-foreground" />
+              <div>
+                <div>
+                  {reservation.numberOfGuests} huésped
+                  {reservation.numberOfGuests !== 1 ? "es" : ""}
+                </div>
+                <div>
+                  {nights} noche{nights !== 1 ? "s" : ""}
+                </div>
               </div>
-            )}
+            </div>
           </div>
+
+          <div className="flex items-center text-sm text-muted-foreground">
+            <CreditCard className="h-4 w-4 mr-2" />
+            <span>Confirmación: BP-{reservation.reservationId}</span>
+          </div>
+
+          {!isPast && (
+            <div className="pt-4 mt-auto">
+              {canCancel ? (
+                <Button
+                  variant="outline"
+                  className="text-destructive border-destructive hover:bg-destructive/10 transition"
+                  onClick={() => setShowCancelDialog(true)}
+                >
+                  Cancelar reservación
+                </Button>
+              ) : (
+                <div className="flex items-center text-sm text-muted-foreground">
+                  <AlertTriangle className="h-4 w-4 mr-2" />
+                  <span>
+                    Las reservaciones activas no pueden cancelarse en línea. Por
+                    favor contacte a recepción.
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </Card>
 
-      {/* Diálogo de confirmación de cancelación */}
+      {/* Dialogo de cancelación */}
       <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -229,18 +221,14 @@ export default function ReservationCard({
             </DialogDescription>
           </DialogHeader>
 
-          <div className="bg-muted p-3 rounded-md mt-2 text-sm">
-            <div className="font-medium">Detalles de la reservación:</div>
-            <div className="mt-1">
-              <div>Check-in: {format(reservation.checkIn, "MMM dd, yyyy")}</div>
-              <div>
-                Check-out: {format(reservation.checkOut, "MMM dd, yyyy")}
-              </div>
-              <div>Confirmación: BP-{reservation.reservationId}</div>
-            </div>
+          <div className="bg-muted p-4 rounded-md text-sm space-y-1">
+            <div className="font-medium">Detalles:</div>
+            <div>Check-in: {format(reservation.checkIn, "MMM dd, yyyy")}</div>
+            <div>Check-out: {format(reservation.checkOut, "MMM dd, yyyy")}</div>
+            <div>Confirmación: BP-{reservation.reservationId}</div>
           </div>
 
-          <DialogFooter className="flex space-x-2 sm:space-x-0 sm:justify-end">
+          <DialogFooter className="pt-4">
             <Button
               variant="destructive"
               onClick={handleCancelReservation}
