@@ -103,10 +103,10 @@ export default function UserReview() {
 
   if (isSubmitted) {
     return (
-      <Card className="max-w-2xl mx-auto">
+      <Card className="max-w-2xl mx-auto text-center bg-card border border-border rounded-xl shadow-md py-8">
         <CardContent className="pt-6 text-center">
           <div className="flex justify-center mb-4">
-            <CheckCircle className="h-16 w-16 text-green-500" />
+            <CheckCircle className="h-14 w-14 text-green-500 mx-auto mb-4" />
           </div>
           <CardTitle className="text-2xl mb-2">¡Gracias!</CardTitle>
           <CardDescription className="text-lg">
@@ -121,7 +121,7 @@ export default function UserReview() {
   }
 
   return (
-    <Card className="max-w-2xl mx-auto">
+    <Card className="max-w-3xl mx-auto bg-card border border-border rounded-xl shadow-md">
       <CardHeader>
         <CardTitle className="text-xl font-semibold">
           Escribe una reseña
@@ -136,6 +136,7 @@ export default function UserReview() {
           {/* Valoración */}
           <div className="space-y-2">
             <Label htmlFor="rating">Tu valoración</Label>
+
             <div
               className="flex items-center gap-1"
               onMouseLeave={handleRatingLeave}
@@ -176,8 +177,8 @@ export default function UserReview() {
               value={reviewText}
               onChange={(e) => setReviewText(e.target.value)}
               rows={5}
-              className="resize-none"
-            />
+              className="resize-none bg-muted border-border focus:ring-2 focus:ring-accent"
+            ></Textarea>
             <p className="text-xs text-muted-foreground">
               {reviewText.length < 10
                 ? `Se requieren al menos ${
@@ -194,7 +195,7 @@ export default function UserReview() {
               value={roomType}
               onValueChange={(value) => setRoomType(value as RoomType)}
             >
-              <SelectTrigger>
+              <SelectTrigger className="bg-muted border-border focus:ring-accent">
                 <SelectValue placeholder="Selecciona el tipo de habitación" />
               </SelectTrigger>
               <SelectContent>
@@ -209,7 +210,7 @@ export default function UserReview() {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 transition"
           >
             {isSubmitting ? "Enviando..." : "Enviar reseña"}
             <Send className="h-4 w-4" />

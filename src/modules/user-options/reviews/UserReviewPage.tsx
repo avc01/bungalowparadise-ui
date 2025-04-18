@@ -7,20 +7,22 @@ export default function UserReviewPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="py-8">
+    <div className="py-12 px-6 max-w-4xl mx-auto">
       <Button
         variant="ghost"
         onClick={() => navigate("/")}
-        className="mb-6"
+        className="mb-6 text-primary hover:underline"
       >
         <ArrowLeft className="mr-2 h-4 w-4" /> Volver al Inicio
       </Button>
 
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">Comparte tu experiencia</h1>
-        <p className="text-muted-foreground mt-2">
+      <div className="mb-10">
+        <h1 className="text-3xl font-bold tracking-tight">
+          Comparte tu experiencia
+        </h1>
+        <p className="text-muted-foreground mt-2 text-sm max-w-xl">
           Valoramos tus comentarios. Por favor, tómate un momento para evaluar
-          tu estadía en BungalowParadise.
+          tu estadía en <strong>Bungalow Paradise</strong>.
         </p>
       </div>
 
