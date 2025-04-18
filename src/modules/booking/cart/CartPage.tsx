@@ -64,31 +64,32 @@ export default function CartPage() {
   const nights = checkIn && checkOut ? calculateNights(checkIn, checkOut) : 0;
 
   return (
-    <div className="py-8">
+    <div className="py-12 px-6 max-w-7xl mx-auto space-y-10">
       <Button
         variant="ghost"
-        // onClick={() => router.push("/bookings")}
         onClick={() => navigate("/bookings")}
-        className="mb-6"
+        className="text-primary hover:underline"
       >
         <ArrowLeft className="mr-2 h-4 w-4" /> Volver a las reservas
       </Button>
 
-      <div className="flex items-center gap-3 mb-8">
-        <ShoppingCart className="h-6 w-6" />
-        <h1 className="text-3xl font-bold">Tu Carrito</h1>
+      <div className="flex items-center gap-3">
+        <ShoppingCart className="h-6 w-6 text-primary" />
+        <h1 className="text-3xl font-bold tracking-tight">Tu Carrito</h1>
       </div>
 
       {cartItems.length === 0 ? (
-        <Card className="text-center py-12">
+        <Card className="text-center py-12 bg-card border border-border rounded-xl shadow-md">
           <CardContent>
-            <h2 className="text-xl font-medium mb-2">Tu carrito está vacío</h2>
-            <p className="text-muted-foreground mb-6">
+            <h2 className="text-xl font-semibold mb-2">
+              Tu carrito está vacío
+            </h2>
+            <p className="text-muted-foreground mb-6 text-sm">
               Agrega habitaciones a tu carrito para continuar
             </p>
             <Button
-              // onClick={() => router.push("/bookings")}
               onClick={() => navigate("/bookings")}
+              className="bg-primary text-primary-foreground"
             >
               Explorar habitaciones
             </Button>
@@ -96,111 +97,124 @@ export default function CartPage() {
         </Card>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
-            <Card>
+          {/* Items del carrito */}
+          <div className="lg:col-span-2 space-y-6">
+            <Card className="border border-border shadow-md rounded-xl">
               <CardHeader>
-                <CardTitle>
+                <CardTitle className="text-lg font-semibold">
                   Artículos en el carrito ({cartItems.length})
                 </CardTitle>
                 {checkIn && checkOut && (
-                  <Alert variant="default" className="mt-4 bg-muted">
+                  <Alert
+                    variant="default"
+                    className="mt-4 bg-muted border-border"
+                  >
                     <CalendarIcon className="h-4 w-4" />
-                    <AlertDescription>
+                    <AlertDescription className="text-sm">
                       Todas las habitaciones están reservadas del{" "}
-                      {format(checkIn, "MMM dd, yyyy")} al{" "}
-                      {format(checkOut, "MMM dd, yyyy")} ({nights} noche
-                      {nights !== 1 ? "s" : ""})
+                      <strong>{format(checkIn, "MMM dd, yyyy")}</strong> al{" "}
+                      <strong>{format(checkOut, "MMM dd, yyyy")}</strong> (
+                      {nights} noche{nights !== 1 ? "s" : ""})
                     </AlertDescription>
                   </Alert>
                 )}
               </CardHeader>
-              <CardContent className="space-y-4">
+
+              <CardContent className="space-y-6">
                 {cartItems.map((item, index) => {
                   const nights = calculateNights(item.checkIn, item.checkOut);
                   const itemTotal = item.price * nights;
 
                   return (
-                    <div key={index} className="flex gap-4 pb-4 border-b">
-                      <div className="relative h-24 w-32 flex-shrink-0">
+                    <div
+                      key={index}
+                      className="flex gap-4 pb-6 border-b border-border"
+                    >
+                      <div className="relative h-24 w-32 flex-shrink-0 overflow-hidden rounded-lg">
                         <img
                           src={item.imageUrl || "/placeholder.svg"}
                           alt={item.name}
-                          className="w-full object-cover rounded-md"
+                          className="w-full h-full object-cover"
                         />
                       </div>
-                      <div className="flex-1">
-                        <div className="flex justify-between">
-                          <h3 className="font-medium">{item.name}</h3>
-                          <p className="font-semibold">
+                      <div className="flex-1 space-y-1">
+                        <div className="flex justify-between items-start">
+                          <h3 className="font-semibold text-base">
+                            {item.name}
+                          </h3>
+                          <p className="font-bold text-primary">
                             ${itemTotal.toFixed(2)}
                           </p>
                         </div>
-                        <div className="text-sm text-muted-foreground mt-1">
+                        <p className="text-sm text-muted-foreground">
                           ${item.price} por noche × {nights} noche
                           {nights !== 1 ? "s" : ""}
-                        </div>
-                        <div className="flex items-center gap-2 mt-2 text-sm">
-                          <CalendarIcon className="h-3 w-3" />
+                        </p>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <CalendarIcon className="h-4 w-4" />
                           <span>
-                            {format(item.checkIn, "MMM dd, yyyy")} -{" "}
+                            {format(item.checkIn, "MMM dd")} -{" "}
                             {format(item.checkOut, "MMM dd, yyyy")}
                           </span>
                         </div>
-                        <div className="mt-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 px-2 text-destructive hover:text-destructive"
-                            onClick={() => handleRemoveItem(index)}
-                          >
-                            <Trash2 className="h-4 w-4 mr-1" />
-                            Eliminar
-                          </Button>
-                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-destructive hover:text-destructive px-0 h-6 mt-2"
+                          onClick={() => handleRemoveItem(index)}
+                        >
+                          <Trash2 className="h-4 w-4 mr-1" />
+                          Eliminar
+                        </Button>
                       </div>
                     </div>
                   );
                 })}
               </CardContent>
+
               <CardFooter className="flex justify-between">
-                <Button
-                  variant="outline"
-                  //   onClick={() => router.push("/bookings")}
-                  onClick={() => navigate("/bookings")}
-                >
-                  Continuar comprando
+                <Button variant="outline" onClick={() => navigate("/bookings")}>
+                  Continuar explorando
                 </Button>
-                <Button variant="ghost" onClick={() => clearCart()}>
+                <Button
+                  variant="ghost"
+                  className="text-destructive hover:text-destructive/80"
+                  onClick={() => clearCart()}
+                >
                   Vaciar carrito
                 </Button>
               </CardFooter>
             </Card>
           </div>
 
+          {/* Resumen del pedido */}
           <div>
-            <Card>
+            <Card className="border border-border rounded-xl shadow-md">
               <CardHeader>
-                <CardTitle>Resumen del pedido</CardTitle>
+                <CardTitle className="text-lg font-semibold">
+                  Resumen del pedido
+                </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span>Subtotal</span>
-                    <span>${totalPrice.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span>Impuestos y tarifas</span>
-                    <span>${taxesAndFees.toFixed(2)}</span>
-                  </div>
-                  <Separator />
-                  <div className="flex justify-between font-medium">
-                    <span>Total</span>
-                    <span>${grandTotal.toFixed(2)}</span>
-                  </div>
+              <CardContent className="space-y-4 text-sm">
+                <div className="flex justify-between">
+                  <span>Subtotal</span>
+                  <span>${totalPrice.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Impuestos y tarifas</span>
+                  <span>${taxesAndFees.toFixed(2)}</span>
+                </div>
+                <Separator />
+                <div className="flex justify-between font-medium text-base">
+                  <span>Total</span>
+                  <span>${grandTotal.toFixed(2)}</span>
                 </div>
               </CardContent>
               <CardFooter>
-                <Button className="w-full" onClick={handleCheckout}>
+                <Button
+                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+                  onClick={handleCheckout}
+                >
                   Proceder al pago
                 </Button>
               </CardFooter>

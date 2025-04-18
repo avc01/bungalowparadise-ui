@@ -197,59 +197,68 @@ export default function BookingsPage() {
   };
 
   return (
-    <div className="py-8">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Encuentra tu bungalow perfecto</h1>
+    <div className="py-12 px-6 max-w-7xl mx-auto space-y-10">
+      {/* Encabezado y botón del carrito */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <h1 className="text-3xl font-bold tracking-tight">
+          Encuentra tu bungalow perfecto
+        </h1>
         <Button
           variant="outline"
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 border-border hover:bg-muted"
           onClick={goToCart}
         >
           <ShoppingCart className="h-4 w-4" />
           <span>Carrito</span>
           {cartItems.length > 0 && (
-            <Badge variant="secondary" className="ml-1">
+            <Badge
+              variant="secondary"
+              className="ml-1 bg-primary/10 text-primary"
+            >
               {cartItems.length}
             </Badge>
           )}
         </Button>
       </div>
 
+      {/* Alerta si hay elementos en carrito */}
       {showCartAlert && cartItems.length > 0 && (
-        <Alert className="mb-6">
+        <Alert className="bg-muted border-border text-muted-foreground">
           <Info className="h-4 w-4" />
-          <AlertDescription>
+          <AlertDescription className="text-sm">
             Tienes elementos en tu carrito. Todas las nuevas habitaciones deben
             ser reservadas para las mismas fechas:{" "}
-            {checkInDate && format(checkInDate, "MMM dd, yyyy")} a{" "}
-            {checkOutDate && format(checkOutDate, "MMM dd, yyyy")}
+            <span className="font-medium text-foreground">
+              {checkInDate && format(checkInDate, "MMM dd, yyyy")} a{" "}
+              {checkOutDate && format(checkOutDate, "MMM dd, yyyy")}
+            </span>
           </AlertDescription>
         </Alert>
       )}
 
-      {/* Filtros de búsqueda */}
-      <div className="bg-card rounded-xl shadow-md p-6 mb-8">
+      {/* Filtros */}
+      <div className="bg-card rounded-xl shadow-md border border-border p-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {/* Filtro de rango de precios */}
+          {/* Rango de precios */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">
+            <label className="text-sm font-medium text-foreground">
               Rango de precios: ${priceRange[0]} - ${priceRange[1]}
             </label>
-            <div className="pt-6 px-2">
-              <Slider
-                defaultValue={[0, 1000]}
-                max={1000}
-                step={50}
-                value={priceRange}
-                onValueChange={setPriceRange}
-                className="py-4"
-              />
-            </div>
+            <Slider
+              defaultValue={[0, 1000]}
+              max={1000}
+              step={50}
+              value={priceRange}
+              onValueChange={setPriceRange}
+              className="pt-4 px-2"
+            />
           </div>
 
-          {/* Selector de fecha de check-in */}
+          {/* Fecha check-in */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Fecha de check-in</label>
+            <label className="text-sm font-medium text-foreground">
+              Fecha de check-in
+            </label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -270,14 +279,17 @@ export default function BookingsPage() {
                   selected={checkInDate}
                   onSelect={handleCheckInChange}
                   disabled={(date) => date < new Date()}
+                  className="bg-white rounded-md shadow-md text-foreground"
                 />
               </PopoverContent>
             </Popover>
           </div>
 
-          {/* Selector de fecha de check-out */}
+          {/* Fecha check-out */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Fecha de check-out</label>
+            <label className="text-sm font-medium text-foreground">
+              Fecha de check-out
+            </label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -298,16 +310,19 @@ export default function BookingsPage() {
                   selected={checkOutDate}
                   onSelect={handleCheckOutChange}
                   disabled={(date) => !checkInDate || date <= checkInDate}
+                  className="bg-white rounded-md shadow-md text-foreground"
                 />
               </PopoverContent>
             </Popover>
           </div>
 
-          {/* Filtro de tipo de habitación */}
+          {/* Tipo de habitación */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Tipo de habitación</label>
+            <label className="text-sm font-medium text-foreground">
+              Tipo de habitación
+            </label>
             <Select value={roomType} onValueChange={setRoomType}>
-              <SelectTrigger>
+              <SelectTrigger className="bg-muted border-border">
                 <SelectValue placeholder="Todas las habitaciones" />
               </SelectTrigger>
               <SelectContent>
@@ -321,23 +336,22 @@ export default function BookingsPage() {
         </div>
       </div>
 
-      {/* Listado de habitaciones */}
+      {/* Grid de habitaciones */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredRooms.map((room) => {
           const roomInCart = isRoomInCart(room.id);
-
           return (
             <Card
               key={room.id}
-              className={`overflow-hidden p-0 ${
-                roomInCart ? "border-primary" : ""
+              className={`overflow-hidden p-0 rounded-xl border shadow-md transition ${
+                roomInCart ? "border-primary" : "border-border"
               }`}
             >
               <div className="relative h-48">
                 <img
                   src={room.imageUrl || "/placeholder.svg"}
                   alt={room.name}
-                  className="w-full h-full object-cover rounded-t-md"
+                  className="w-full h-full object-cover"
                 />
                 {roomInCart && (
                   <div className="absolute top-2 right-2">
@@ -350,32 +364,36 @@ export default function BookingsPage() {
                   </div>
                 )}
               </div>
-              <CardContent className="p-4">
+
+              <CardContent className="p-4 space-y-3">
                 <div className="flex justify-between items-start">
                   <h3 className="text-xl font-semibold">{room.name}</h3>
-                  <p className="text-lg font-bold">
+                  <p className="text-lg font-bold text-primary">
                     ${room.price}
                     <span className="text-sm font-normal text-muted-foreground">
                       /noche
                     </span>
                   </p>
                 </div>
-                <p className="text-muted-foreground mt-2">{room.description}</p>
-                <div className="flex gap-4 mt-4">
-                  <div className="flex items-center gap-1 text-sm">
+                <p className="text-sm text-muted-foreground">
+                  {room.description}
+                </p>
+                <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-1">
                     <Users size={16} />
                     <span>{room.guestsPerRoom} huéspedes</span>
                   </div>
-                  <div className="flex items-center gap-1 text-sm">
+                  <div className="flex items-center gap-1">
                     <Bed size={16} />
                     <span>{room.guestsPerRoom <= 2 ? 1 : 2} camas</span>
                   </div>
-                  <div className="flex items-center gap-1 text-sm">
+                  <div className="flex items-center gap-1">
                     <Bath size={16} />
                     <span>{room.bathrooms} baño</span>
                   </div>
                 </div>
               </CardContent>
+
               <CardFooter className="p-4 pt-0 flex gap-2">
                 <Button className="flex-1" onClick={goToCart} variant="outline">
                   Ir al carrito
@@ -400,7 +418,7 @@ export default function BookingsPage() {
       </div>
 
       {filteredRooms.length === 0 && (
-        <div className="text-center py-12">
+        <div className="text-center py-12 bg-muted/20 rounded-xl border border-border">
           <h3 className="text-xl font-medium">
             No hay habitaciones que coincidan con tus criterios de búsqueda
           </h3>

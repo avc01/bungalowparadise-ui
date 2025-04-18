@@ -154,13 +154,18 @@ export default function PaymentPage() {
 
   if (cartItems.length === 0 && !isComplete) {
     return (
-      <div className="container mx-auto py-12 px-4 text-center">
-        <h1 className="text-2xl font-bold mb-4">No hay artículos para pagar</h1>
-        <p className="mb-6">
-          Tu carrito está vacío. Por favor, agrega habitaciones a tu carrito
-          antes de proceder al pago.
+      <div className="max-w-xl mx-auto bg-muted/30 border border-border rounded-xl shadow-md text-center py-12 px-6 space-y-6">
+        <h1 className="text-3xl font-bold tracking-tight">
+          No hay artículos para pagar
+        </h1>
+        <p className="text-muted-foreground text-sm">
+          Tu carrito está vacío. Por favor, agrega habitaciones antes de
+          continuar con el pago.
         </p>
-        <Button onClick={() => navigate("/bookings")}>
+        <Button
+          className="bg-primary text-primary-foreground hover:bg-primary/90"
+          onClick={() => navigate("/bookings")}
+        >
           Volver a las reservas
         </Button>
       </div>
@@ -169,39 +174,42 @@ export default function PaymentPage() {
 
   if (isComplete) {
     return (
-      <div className="container mx-auto max-w-3xl py-12 px-4">
-        <Card className="border-green-200">
-          <CardHeader className="text-center">
-            <CheckCircle2 className="mx-auto h-16 w-16 text-green-500 mb-4" />
-            <CardTitle className="text-2xl">¡Reserva Confirmada!</CardTitle>
-            <CardDescription>
-              Tu reserva ha sido procesada exitosamente
+      <div className="max-w-3xl mx-auto py-12 px-6">
+        <Card className="border border-green-300 shadow-md rounded-xl">
+          <CardHeader className="text-center space-y-2">
+            <CheckCircle2 className="mx-auto h-16 w-16 text-green-500 mb-2" />
+            <CardTitle className="text-2xl font-bold tracking-tight">
+              ¡Reserva Confirmada!
+            </CardTitle>
+            <CardDescription className="text-muted-foreground">
+              Tu reserva ha sido procesada exitosamente.
             </CardDescription>
           </CardHeader>
+
           <CardContent className="space-y-6">
-            <div className="rounded-lg bg-muted p-4">
-              <div className="grid grid-cols-2 gap-4">
+            <div className="rounded-xl bg-muted border border-border p-4">
+              <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <p className="text-sm text-muted-foreground">
-                    Referencia de Reserva
+                  <p className="text-muted-foreground">Referencia de Reserva</p>
+                  <p className="font-semibold text-foreground">
+                    {reservationRes.reservationId}
                   </p>
-                  <p className="font-medium">{reservationRes.reservationId}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Huésped</p>
-                  <p className="font-medium">
+                  <p className="text-muted-foreground">Huésped</p>
+                  <p className="font-semibold text-foreground">
                     {formData.firstName} {formData.lastName}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Monto Total</p>
-                  <p className="font-medium">
+                  <p className="text-muted-foreground">Monto Total</p>
+                  <p className="font-semibold text-foreground">
                     ${reservationRes.amount.toFixed(2)}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Habitaciones</p>
-                  <p className="font-medium">
+                  <p className="text-muted-foreground">Habitaciones</p>
+                  <p className="font-semibold text-foreground">
                     {reservationRes.rooms} habitación
                     {reservationRes.rooms !== 1 ? "es" : ""}
                   </p>
@@ -209,48 +217,26 @@ export default function PaymentPage() {
               </div>
             </div>
 
-            {/* <div className="space-y-4">
-              <h3 className="font-medium">Detalles de la Reserva</h3>
-              {cartItems.map((item, index) => (
-                <div
-                  key={index}
-                  className="flex gap-4 items-center border-b pb-4 last:border-0 last:pb-0"
-                >
-                  <div className="relative h-16 w-24 flex-shrink-0">
-                    <img
-                      src={item.imageUrl || "/placeholder.svg"}
-                      alt={item.name}
-                      className="w-full object-cover rounded-md"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-medium">{item.name}</h4>
-                    <div className="text-sm text-muted-foreground">
-                      {format(item.checkIn, "dd MMM yyyy")} -{" "}
-                      {format(item.checkOut, "dd MMM yyyy")}
-                    </div>
-                    <div className="text-sm">
-                      ${item.price}/noche ×{" "}
-                      {calculateNights(item.checkIn, item.checkOut)} noche
-                      {calculateNights(item.checkIn, item.checkOut) !== 1
-                        ? "s"
-                        : ""}
-                    </div>
-                  </div>
-                  <div className="font-medium">
-                    ${calculateItemTotal(item).toFixed(2)}
-                  </div>
-                </div>
-              ))}
-            </div> */}
-
-            <div className="text-center text-muted-foreground">
-              <p>Se ha enviado un correo de confirmación a {formData.email}</p>
-              <p>¡Esperamos darte la bienvenida en BungalowParadise!</p>
+            <div className="text-center text-sm text-muted-foreground">
+              <p>
+                Se ha enviado un correo de confirmación a{" "}
+                <strong>{formData.email}</strong>.
+              </p>
+              <p>
+                ¡Esperamos darte la bienvenida en{" "}
+                <span className="text-primary font-medium">
+                  Bungalow Paradise
+                </span>
+                !
+              </p>
             </div>
           </CardContent>
+
           <CardFooter>
-            <Button className="w-full" onClick={() => navigate("/bookings")}>
+            <Button
+              className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+              onClick={() => navigate("/bookings")}
+            >
               Volver a Reservas
             </Button>
           </CardFooter>
@@ -260,35 +246,43 @@ export default function PaymentPage() {
   }
 
   return (
-    <div className="py-8">
-      <Button variant="ghost" onClick={goBack} className="mb-6">
+    <div className="py-12 px-6 max-w-7xl mx-auto space-y-8">
+      <Button
+        variant="ghost"
+        onClick={goBack}
+        className="text-primary hover:underline"
+      >
         <ArrowLeft className="mr-2 h-4 w-4" /> Atrás
       </Button>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Formulario de pago */}
         <div className="lg:col-span-2">
-          <Card>
+          <Card className="rounded-xl border border-border shadow-md">
             <CardHeader>
-              <CardTitle>Completa tu reserva</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-xl font-bold tracking-tight">
+                Completa tu reserva
+              </CardTitle>
+              <CardDescription className="text-muted-foreground text-sm">
                 Por favor, proporciona tus datos para confirmar tu reserva
               </CardDescription>
             </CardHeader>
+
             <CardContent>
               <Tabs
                 value={formStep === 0 ? "guest" : "payment"}
-                onValueChange={(value) => {
-                  setFormStep(value === "guest" ? 0 : 1);
-                }}
+                onValueChange={(value) =>
+                  setFormStep(value === "guest" ? 0 : 1)
+                }
               >
-                <TabsList className="grid w-full grid-cols-2 mb-8">
+                <TabsList className="grid grid-cols-2 mb-6 bg-muted rounded-lg border border-border">
                   <TabsTrigger value="guest">
                     Información del huésped
                   </TabsTrigger>
                   <TabsTrigger value="payment">Detalles de pago</TabsTrigger>
                 </TabsList>
 
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} className="space-y-6">
                   <TabsContent value="guest" className="space-y-6">
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
@@ -343,7 +337,7 @@ export default function PaymentPage() {
 
                     <Button
                       type="button"
-                      className="w-full"
+                      className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
                       onClick={() => setFormStep(1)}
                     >
                       Continuar al pago
@@ -445,16 +439,15 @@ export default function PaymentPage() {
                       </div>
                     </div>
 
-                    {/* Mensaje de error */}
                     {reservationError && (
-                      <div className="p-4 rounded-md bg-red-100 text-red-800 text-sm border border-red-300">
+                      <div className="p-4 rounded-md bg-destructive/10 text-destructive text-sm border border-destructive/30">
                         {reservationError}
                       </div>
                     )}
 
                     <Button
                       type="submit"
-                      className="w-full"
+                      className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
                       disabled={isSubmitting}
                     >
                       {isSubmitting ? "Procesando..." : "Confirmar reserva"}
@@ -466,24 +459,27 @@ export default function PaymentPage() {
           </Card>
         </div>
 
+        {/* Resumen de la reserva */}
         <div>
-          <Card>
+          <Card className="rounded-xl border border-border shadow-md">
             <CardHeader>
-              <CardTitle>Resumen de la reserva</CardTitle>
+              <CardTitle className="text-lg font-semibold">
+                Resumen de la reserva
+              </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 text-sm">
               {cartItems.length > 0 && (
                 <div className="space-y-4">
                   {cartItems.map((item, index) => {
                     const nights = calculateNights(item.checkIn, item.checkOut);
                     return (
                       <div key={index} className="flex items-center gap-4">
-                        <div className="rounded-md bg-muted h-12 w-12 flex items-center justify-center flex-shrink-0">
+                        <div className="rounded-md bg-muted h-12 w-12 flex items-center justify-center">
                           <CreditCard className="h-6 w-6 text-muted-foreground" />
                         </div>
                         <div className="min-w-0 flex-1">
                           <h3 className="font-medium truncate">{item.name}</h3>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-muted-foreground text-xs">
                             ${item.price} × {nights} noche
                             {nights !== 1 ? "s" : ""}
                           </p>
@@ -509,7 +505,7 @@ export default function PaymentPage() {
                   <span>${taxesAndFees.toFixed(2)}</span>
                 </div>
                 <Separator />
-                <div className="flex justify-between font-medium">
+                <div className="flex justify-between font-medium text-base">
                   <span>Total</span>
                   <span>${grandTotal.toFixed(2)}</span>
                 </div>
