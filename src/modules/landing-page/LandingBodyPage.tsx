@@ -1,358 +1,137 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Calendar } from "@/components/ui/calendar";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { CalendarIcon, Search, User } from "lucide-react";
-import { format } from "date-fns";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Slider } from "@/components/ui/slider";
-import RoomResults from "../room-result/RoomResults";
+import { Card } from "@/components/ui/card";
+import { User } from "lucide-react";
 
 export default function LandingBodyPage() {
-  const [date, setDate] = useState<Date | undefined>(new Date());
-  const [checkoutDate, setCheckoutDate] = useState<Date | undefined>(
-    new Date(new Date().setDate(new Date().getDate() + 1))
-  );
-  const [priceRange, setPriceRange] = useState([0, 1000]);
-  const [roomType, setRoomType] = useState("all");
-  const [showResults, setShowResults] = useState(false);
-
-  const handleSearch = () => {
-    setShowResults(true);
-  };
-
   return (
-    <main className="flex-1">
-      <section className="relative">
-        {/* <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/90 z-10" /> */}
+    <main className="flex-1 bg-background text-foreground">
+      {/* === Hero Section === */}
+      <section className="relative h-[900px] overflow-hidden">
         <div
-          className="h-[500px] bg-cover bg-center"
+          className="absolute inset-0 w-screen h-full bg-cover bg-center"
           style={{
             backgroundImage: "url('/hotel-landpage.jpg?height=500&width=1200')",
           }}
         />
-        <div className="absolute inset-0 flex flex-col items-center justify-center z-20">
+        {/* <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-background/80 z-10" /> */}
+        <div className="relative z-20 flex h-full items-center justify-center">
           <h1
-            className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl text-white text-center"
-            style={{ textShadow: "2px 2px 4px rgba(0, 0, 0, 0.7)" }}
+            className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl text-white text-center drop-shadow-2xl transition-opacity duration-700 animate-fade-in"
+            style={{ textShadow: "2px 2px 6px rgba(0, 0, 0, 0.8)" }}
           >
             Encuentra Tu Escapada Perfecta
           </h1>
         </div>
       </section>
 
-      <section className="py-8 -mt-16 relative z-30">
-        <Card className="border shadow-lg">
-          <CardContent className="p-6">
-            <div className="grid gap-4 md:grid-cols-4">
-              <div className="space-y-2">
-                <Label>Check-in</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="w-full justify-start text-left font-normal"
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {format(date ?? "", "PPP")}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={date}
-                      onSelect={setDate}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-              <div className="space-y-2">
-                <Label>Check-out</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="w-full justify-start text-left font-normal"
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {format(checkoutDate ?? "", "PPP")}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={checkoutDate}
-                      onSelect={setCheckoutDate}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-              <div className="space-y-2">
-                <Label>Rango de Precio</Label>
-                <Slider
-                  min={0}
-                  max={1000}
-                  step={10}
-                  value={priceRange}
-                  onValueChange={setPriceRange}
-                  className="mt-2"
-                />
-                <div className="flex justify-between text-sm text-muted-foreground">
-                  <span>${priceRange[0]}</span>
-                  <span>${priceRange[1]}</span>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label>Tipo de Habitación</Label>
-                <Select value={roomType} onValueChange={setRoomType}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Room Type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Types</SelectItem>
-                    <SelectItem value="standard">Standard</SelectItem>
-                    <SelectItem value="deluxe">Deluxe</SelectItem>
-                    <SelectItem value="suite">Suite</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <Button className="w-full md:w-auto mt-4" onClick={handleSearch}>
-              <Search className="mr-2 h-4 w-4" />
-              Buscar
-            </Button>
-          </CardContent>
-        </Card>
-        {showResults && <RoomResults />}
-      </section>
-
-      <section className="bg-muted py-12">
-        <div className="">
+      {/* === Why Us Section === */}
+      <section className="bg-muted py-16">
+        <div className="max-w-6xl mx-auto px-6">
           <div className="grid md:grid-cols-2 gap-8 items-center">
-            <div className="ml-5">
-              <h2 className="text-3xl font-bold tracking-tight mb-4">
+            <div>
+              <h2 className="text-3xl font-bold tracking-tight mb-6 text-foreground">
                 ¿Por qué elegir Bungalow Paradise?
               </h2>
-              <ul className="space-y-4">
-                <li className="flex items-start gap-2">
-                  <div className="rounded-full bg-primary p-1 mt-1">
-                    <svg
-                      className="h-3 w-3 text-primary-foreground"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
+              <ul className="space-y-6">
+                {[
+                  {
+                    title: "Mejor Precio Garantizado",
+                    desc: "¿Encontró un precio más bajo? Lo igualaremos y le daremos un 10 % de descuento adicional.",
+                  },
+                  {
+                    title: "Cancelación Gratuita",
+                    desc: "Solo aplica con 24 horas de anterioridad.",
+                  },
+                  {
+                    title: "Atención al cliente 24/7",
+                    desc: "Nuestro equipo de atención al cliente está disponible las 24 horas del día para ayudarle.",
+                  },
+                ].map((item, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <div className="rounded-full bg-primary p-2 mt-1 shadow">
+                      <svg
+                        className="h-4 w-4 text-primary-foreground"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M5 13l4 4L19 7"
-                      ></path>
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="font-medium">Mejor Precio Garantizado</h3>
-                    <p className="text-muted-foreground">
-                      ¿Encontró un precio más bajo? Lo igualaremos y le daremos
-                      un 10 % de descuento adicional.
-                    </p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-2">
-                  <div className="rounded-full bg-primary p-1 mt-1">
-                    <svg
-                      className="h-3 w-3 text-primary-foreground"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M5 13l4 4L19 7"
-                      ></path>
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="font-medium">Cancelación Gratuita</h3>
-                    <p className="text-muted-foreground">
-                      Solo aplica con 24 horas de anterioridad.
-                    </p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-2">
-                  <div className="rounded-full bg-primary p-1 mt-1">
-                    <svg
-                      className="h-3 w-3 text-primary-foreground"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M5 13l4 4L19 7"
-                      ></path>
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="font-medium">
-                      Atención al cliente 24 horas al día, 7 días a la semana
-                    </h3>
-                    <p className="text-muted-foreground">
-                      Nuestro equipo de atención al cliente está disponible las
-                      24 horas del día para ayudarle.
-                    </p>
-                  </div>
-                </li>
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-lg">{item.title}</h3>
+                      <p className="text-sm text-muted-foreground">
+                        {item.desc}
+                      </p>
+                    </div>
+                  </li>
+                ))}
               </ul>
             </div>
-            <div className="relative mr-10">
+
+            <div className="relative">
               <img
                 src="/why-us.jpg?height=400&width=600"
                 alt="Luxury hotel room"
-                className="rounded-lg shadow-lg"
+                className="rounded-xl shadow-xl ring-1 ring/30"
               />
             </div>
           </div>
         </div>
       </section>
 
-      <section className="py-12">
-        <div className="">
-          <h2 className="text-3xl font-bold tracking-tight text-center mb-8">
+      {/* === Testimonials === */}
+      <section className="py-16">
+        <div className="max-w-6xl mx-auto px-6">
+          <h2 className="text-3xl font-bold tracking-tight text-center mb-10">
             Lo que dicen nuestros invitados
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              {
-                name: "Sarah Johnson",
-                location: "Nueva York",
-                quote:
-                  "La mejor experiencia de reserva de hotel que he tenido. El personal fue increíblemente útil y la habitación superó mis expectativas.",
-              },
-              {
-                name: "Michael Chen",
-                location: "San Francisco",
-                quote:
-                  "Bungalow Paradise hizo que nuestra luna de miel fuera perfecta. El resort que nos recomendaron fue absolutamente impresionante y exactamente lo que queríamos.",
-              },
-              {
-                name: "Emma Williams",
-                location: "Londres",
-                quote:
-                  "He utilizado muchos sitios de reservas de hoteles, pero ninguno se compara con el servicio personalizado y la atención al detalle que Bungalow Paradise ofrece.",
-              },
-            ].map((testimonial, index) => (
-              <Card key={index} className="text-center p-6">
-                <div className="mb-4 flex justify-center">
-                  <div className="rounded-full bg-muted p-2">
-                    <User className="h-8 w-8" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[...Array(3)].map((_, index) => {
+              const data = [
+                {
+                  name: "Sarah Johnson",
+                  location: "Nueva York",
+                  quote:
+                    "La mejor experiencia de reserva de hotel que he tenido. El personal fue increíblemente útil y la habitación superó mis expectativas.",
+                },
+                {
+                  name: "Michael Chen",
+                  location: "San Francisco",
+                  quote:
+                    "Bungalow Paradise hizo que nuestra luna de miel fuera perfecta. El resort que nos recomendaron fue absolutamente impresionante y exactamente lo que queríamos.",
+                },
+                {
+                  name: "Emma Williams",
+                  location: "Londres",
+                  quote:
+                    "He utilizado muchos sitios de reservas de hoteles, pero ninguno se compara con el servicio personalizado y la atención al detalle que Bungalow Paradise ofrece.",
+                },
+              ][index];
+
+              return (
+                <Card
+                  key={index}
+                  className="text-center p-6 border border-border bg-card shadow-md hover:shadow-lg transition-shadow"
+                >
+                  <div className="mb-4 flex justify-center">
+                    <div className="rounded-full bg-accent p-2 shadow-sm">
+                      <User className="h-8 w-8 text-accent-foreground" />
+                    </div>
                   </div>
-                </div>
-                <p className="italic mb-4">"{testimonial.quote}"</p>
-                <p className="font-semibold">{testimonial.name}</p>
-                <p className="text-sm text-muted-foreground">
-                  {testimonial.location}
-                </p>
-              </Card>
-            ))}
+                  <p className="italic mb-4">"{data.quote}"</p>
+                  <p className="font-semibold">{data.name}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {data.location}
+                  </p>
+                </Card>
+              );
+            })}
           </div>
         </div>
       </section>
-
-      {/* <section className="bg-primary text-primary-foreground py-12">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold tracking-tight mb-4">
-            ¿Listo para reservar tus vacaciones soñadas?
-          </h2>
-          <p className="max-w-2xl mx-auto mb-6">
-            Únete a miles de viajeros satisfechos que han encontrado su escapada
-            perfecta con Bungalow Paradise.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button variant="secondary" size="lg">
-              Explorar destinos
-            </Button>
-              <Dialog>
-              <DialogTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="bg-transparent text-primary-foreground border-primary-foreground hover:bg-primary-foreground hover:text-primary"
-                >
-                  Regístrate ahora
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                  <DialogTitle>Crear una cuenta</DialogTitle>
-                  <DialogDescription>
-                    Únete a Bungalow Paradise para reservar tus vacaciones
-                    soñadas
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <Label htmlFor="firstNameCta">Nombre</Label>
-                      <Input id="firstNameCta" />
-                    </div>
-                    <div>
-                      <Label htmlFor="lastNameCta">Apellido</Label>
-                      <Input id="lastNameCta" />
-                    </div>
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="emailCta">Correo electrónico</Label>
-                    <Input
-                      id="emailCta"
-                      type="email"
-                      placeholder="tu@email.com"
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="passwordCta">Contraseña</Label>
-                    <Input id="passwordCta" type="password" />
-                  </div>
-                </div>
-                <DialogFooter>
-                  <Button type="submit">Crear cuenta</Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </div>
-        </div>
-      </section> */}
     </main>
   );
 }
