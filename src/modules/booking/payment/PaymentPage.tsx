@@ -27,6 +27,14 @@ import { useCart, type CartItem } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import api from "@/lib/api";
 import { AxiosError } from "axios";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function PaymentPage() {
   const navigate = useNavigate();
@@ -57,6 +65,7 @@ export default function PaymentPage() {
     lastName: user?.lastName ?? "",
     email: user?.email ?? "",
     phone: user?.phone ?? "",
+    numberOfGuests: 1,
     cardNumber: "",
     cardName: "",
     expiryMonth: "",
@@ -73,6 +82,10 @@ export default function PaymentPage() {
     amount: 0,
   });
 
+  // Nuevos estados para personas y política
+  const [agreedToPolicy, setAgreedToPolicy] = useState(false);
+  const [showPolicyDialog, setShowPolicyDialog] = useState(false);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -84,6 +97,12 @@ export default function PaymentPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!agreedToPolicy) {
+      setReservationError(
+        "Debes aceptar la política de reservación para continuar."
+      );
+      return;
+    }
     setIsSubmitting(true);
     api
       .post("/api/Reservation/confirm-reservation", {
@@ -93,12 +112,13 @@ export default function PaymentPage() {
         checkIn: cartItems[0].checkIn.toISOString(),
         checkOut: cartItems[0].checkOut.toISOString(),
         roomIds: cartItems.map((x) => x.id),
-
+       
         cardNumber: formData.cardNumber,
         cardName: formData.cardName,
         expiryMonth: formData.expiryMonth,
         expiryYear: formData.expiryYear,
         cVV: formData.cvv,
+        numberOfGuests: formData.numberOfGuests,
         totalAmount: grandTotal,
       })
       .then((res) => {
@@ -117,13 +137,6 @@ export default function PaymentPage() {
         setIsSubmitting(false);
         setReservationError(exception.response?.data as string);
       });
-
-    // Simulate API call
-    // setTimeout(() => {
-    //   setIsSubmitting(false);
-    //   setIsComplete(true);
-    //   clearCart();
-    // }, 1500);
   };
 
   const goBack = () => {
@@ -335,6 +348,29 @@ export default function PaymentPage() {
                       />
                     </div>
 
+                    {/* Número de personas */}
+                    <div className="space-y-2">
+                      <Label htmlFor="numberOfGuests">
+                        ¿Cuántas personas asistirán?
+                      </Label>
+                      <Input
+                        id="numberOfGuests"
+                        name="numberOfGuests"
+                        type="number"
+                        min={1}
+                        max={cartItems.reduce(
+                          (acc, cartItem) =>
+                            cartItem.guestsPerRoom
+                              ? (acc += cartItem.guestsPerRoom)
+                              : acc,
+                          0
+                        )}
+                        value={formData.numberOfGuests}
+                        onChange={handleInputChange}
+                        required
+                      />
+                    </div>
+
                     <Button
                       type="button"
                       className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
@@ -439,6 +475,29 @@ export default function PaymentPage() {
                       </div>
                     </div>
 
+                    {/* Aceptación de política */}
+                    <div className="space-y-2">
+                      <label className="flex items-start gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={agreedToPolicy}
+                          onChange={(e) => setAgreedToPolicy(e.target.checked)}
+                          className="mt-1"
+                        />
+                        <span>
+                          He leído y acepto la{" "}
+                          <button
+                            type="button"
+                            onClick={() => setShowPolicyDialog(true)}
+                            className="underline text-primary"
+                          >
+                            política de reservación del hotel
+                          </button>
+                          .
+                        </span>
+                      </label>
+                    </div>
+
                     {reservationError && (
                       <div className="p-4 rounded-md bg-destructive/10 text-destructive text-sm border border-destructive/30">
                         {reservationError}
@@ -513,6 +572,26 @@ export default function PaymentPage() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Diálogo de política */}
+        <Dialog open={showPolicyDialog} onOpenChange={setShowPolicyDialog}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Política de Reservación</DialogTitle>
+              <DialogDescription>
+                El usuario se compromete a respetar la capacidad máxima
+                permitida en cada habitación y a proporcionar información veraz
+                durante el proceso de reserva. El incumplimiento puede resultar
+                en cargos adicionales o en la cancelación de la estadía.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button onClick={() => setShowPolicyDialog(false)}>
+                Aceptar
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

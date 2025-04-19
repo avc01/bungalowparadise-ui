@@ -31,6 +31,19 @@ import { toast } from "sonner";
 import { useCart } from "@/context/CartContext";
 import api from "@/lib/api";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 interface IRoom {
   id: number;
@@ -42,7 +55,7 @@ interface IRoom {
   beds: number;
   guestsPerRoom: number;
   name: string;
-  imageUrl: string;
+  imageUrl: string[];
   bathrooms: number;
   reservedDateRanges: [string, string][];
 }
@@ -58,6 +71,9 @@ export default function BookingsPage() {
   const [checkOutDate, setCheckOutDate] = useState<Date | undefined>(undefined);
   const [roomType, setRoomType] = useState<string>("All");
   const [showCartAlert, setShowCartAlert] = useState(false);
+
+  // Nuevo estado
+  const [selectedRoom, setSelectedRoom] = useState<IRoom | null>(null);
 
   // Initialize date pickers with cart dates if they exist
   useEffect(() => {
@@ -220,7 +236,6 @@ export default function BookingsPage() {
           )}
         </Button>
       </div>
-
       {/* Alerta si hay elementos en carrito */}
       {showCartAlert && cartItems.length > 0 && (
         <Alert className="bg-muted border-border text-muted-foreground">
@@ -235,7 +250,6 @@ export default function BookingsPage() {
           </AlertDescription>
         </Alert>
       )}
-
       {/* Filtros */}
       <div className="bg-card rounded-xl shadow-md border border-border p-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -335,7 +349,6 @@ export default function BookingsPage() {
           </div>
         </div>
       </div>
-
       {/* Grid de habitaciones */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredRooms.map((room) => {
@@ -347,9 +360,12 @@ export default function BookingsPage() {
                 roomInCart ? "border-primary" : "border-border"
               }`}
             >
-              <div className="relative h-48">
+              <div
+                className="relative h-48 cursor-pointer"
+                onClick={() => setSelectedRoom(room)}
+              >
                 <img
-                  src={room.imageUrl || "/placeholder.svg"}
+                  src={room.imageUrl[0] || "/placeholder.svg"}
                   alt={room.name}
                   className="w-full h-full object-cover"
                 />
@@ -417,6 +433,36 @@ export default function BookingsPage() {
         })}
       </div>
 
+      {selectedRoom && (
+        <Dialog
+          open={!!selectedRoom}
+          onOpenChange={() => setSelectedRoom(null)}
+        >
+          <DialogContent className="max-w-[90vw] w-full h-auto">
+            <DialogHeader>
+              <DialogTitle>{selectedRoom.name}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <Carousel className="w-full">
+                <CarouselContent>
+                  {selectedRoom.imageUrl.map((img, index) => (
+                    <CarouselItem key={index} className="flex justify-center">
+                      <img
+                        src={img}
+                        alt={`Imagen ${index + 1}`}
+                        className="h-[600px] w-full object-cover rounded-xl shadow-md"
+                      />
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious />
+                <CarouselNext />
+              </Carousel>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+      
       {filteredRooms.length === 0 && (
         <div className="text-center py-12 bg-muted/20 rounded-xl border border-border">
           <h3 className="text-xl font-medium">

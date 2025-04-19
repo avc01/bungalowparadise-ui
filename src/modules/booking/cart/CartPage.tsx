@@ -132,7 +132,7 @@ export default function CartPage() {
                     >
                       <div className="relative h-24 w-32 flex-shrink-0 overflow-hidden rounded-lg">
                         <img
-                          src={item.imageUrl || "/placeholder.svg"}
+                          src={item.imageUrl[0] || "/placeholder.svg"}
                           alt={item.name}
                           className="w-full h-full object-cover"
                         />
