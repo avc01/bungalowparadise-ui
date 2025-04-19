@@ -26,6 +26,7 @@ import { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import ChatWindow from "../smart-chat/ChatWindow";
+import { Badge } from "@/components/ui/badge";
 
 export default function MenuBar() {
   const { login, logout, user } = useAuth();
@@ -229,15 +230,21 @@ export default function MenuBar() {
                 Página Principal
               </MenubarTrigger>
             </MenubarMenu>
+
             {/* Reservar Ahora */}
-            <MenubarMenu>
-              <MenubarTrigger
-                className="transition-colors hover:text-accent hover:underline"
-                onClick={() => handleBookNow()}
-              >
-                Reservar Ahora
-              </MenubarTrigger>
-            </MenubarMenu>
+            {/* User Role Options */}
+            {user && user.role === "User" && (
+              <>
+                <MenubarMenu>
+                  <MenubarTrigger
+                    className="transition-colors hover:text-accent hover:underline"
+                    onClick={() => handleBookNow()}
+                  >
+                    Reservar Ahora
+                  </MenubarTrigger>
+                </MenubarMenu>
+              </>
+            )}
 
             {/* Opciones de Usuario */}
             {user && (
@@ -246,17 +253,34 @@ export default function MenuBar() {
                   Opciones de Usuario
                 </MenubarTrigger>
                 <MenubarContent>
-                  <MenubarItem onClick={() => navigate("/user/reservations")}>
-                    Administrar Reservas
-                  </MenubarItem>
-                  <MenubarItem
-                    onClick={() => navigate("/user/payment-methods")}
-                  >
-                    Ver Métodos de Pago
-                  </MenubarItem>
-                  <MenubarItem onClick={() => navigate("/user/review")}>
-                    Compartir Review
-                  </MenubarItem>
+                  {/* User Role Options */}
+                  {user.role === "User" && (
+                    <>
+                      <MenubarItem
+                        onClick={() => navigate("/user/reservations")}
+                      >
+                        Administrar Reservas
+                      </MenubarItem>
+                      <MenubarItem
+                        onClick={() => navigate("/user/payment-methods")}
+                      >
+                        Ver Métodos de Pago
+                      </MenubarItem>
+                      <MenubarItem onClick={() => navigate("/user/review")}>
+                        Compartir Review
+                      </MenubarItem>
+                    </>
+                  )}
+
+                  {/* Admin Role Options */}
+                  {user.role === "Admin" && (
+                    <>
+                      <div className="border-t my-1" />
+                      <MenubarItem onClick={() => navigate("/admin/dashboard")}>
+                        Panel de Administración
+                      </MenubarItem>
+                    </>
+                  )}
 
                   {/* Divider (optional) */}
                   <div className="border-t my-1" />
@@ -278,6 +302,11 @@ export default function MenuBar() {
               <span className="text-sm">
                 Hola, {user.name} {user.lastName}
               </span>
+              {user.role === "Admin" && (
+                <Badge variant="destructive" className="text-xs ml-1">
+                  Admin
+                </Badge>
+              )}
             </div>
           ) : (
             <div className="ml-4 flex items-center gap-2">

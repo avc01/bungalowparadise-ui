@@ -63,6 +63,15 @@ function App() {
             }
           />
 
+          <Route
+            path="/admin/dashboard"
+            element={
+              <PrivateRoute adminOnly>
+                <div className="p-4">Bienvenido al Panel de Administración</div>
+              </PrivateRoute>
+            }
+          />
+
           {/* Catch all unmatched routes */}
           <Route path="*" element={<NotFoundPage />} />
         </Route>
