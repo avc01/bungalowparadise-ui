@@ -51,56 +51,56 @@ type User = {
 
 // Mock user data
 const initialUsers: User[] = [
-  {
-    id: 1,
-    name: "John Doe",
-    email: "john@example.com",
-    phone: "+1 (555) 123-4567",
-    role: "guest",
-    status: "active",
-    reservations: 3,
-    joinDate: new Date(2023, 1, 15),
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    email: "jane@example.com",
-    phone: "+1 (555) 987-6543",
-    role: "admin",
-    status: "active",
-    reservations: 0,
-    joinDate: new Date(2022, 10, 5),
-  },
-  {
-    id: 3,
-    name: "Robert Johnson",
-    email: "robert@example.com",
-    phone: "+1 (555) 456-7890",
-    role: "guest",
-    status: "inactive",
-    reservations: 1,
-    joinDate: new Date(2023, 5, 22),
-  },
-  {
-    id: 4,
-    name: "Emily Davis",
-    email: "emily@example.com",
-    phone: "+1 (555) 234-5678",
-    role: "staff",
-    status: "active",
-    reservations: 0,
-    joinDate: new Date(2023, 3, 10),
-  },
-  {
-    id: 5,
-    name: "Michael Wilson",
-    email: "michael@example.com",
-    phone: "+1 (555) 876-5432",
-    role: "guest",
-    status: "blocked",
-    reservations: 2,
-    joinDate: new Date(2022, 8, 18),
-  },
+  // {
+  //   id: 1,
+  //   name: "John Doe",
+  //   email: "john@example.com",
+  //   phone: "+1 (555) 123-4567",
+  //   role: "guest",
+  //   status: "active",
+  //   reservations: 3,
+  //   joinDate: new Date(2023, 1, 15),
+  // },
+  // {
+  //   id: 2,
+  //   name: "Jane Smith",
+  //   email: "jane@example.com",
+  //   phone: "+1 (555) 987-6543",
+  //   role: "admin",
+  //   status: "active",
+  //   reservations: 0,
+  //   joinDate: new Date(2022, 10, 5),
+  // },
+  // {
+  //   id: 3,
+  //   name: "Robert Johnson",
+  //   email: "robert@example.com",
+  //   phone: "+1 (555) 456-7890",
+  //   role: "guest",
+  //   status: "inactive",
+  //   reservations: 1,
+  //   joinDate: new Date(2023, 5, 22),
+  // },
+  // {
+  //   id: 4,
+  //   name: "Emily Davis",
+  //   email: "emily@example.com",
+  //   phone: "+1 (555) 234-5678",
+  //   role: "staff",
+  //   status: "active",
+  //   reservations: 0,
+  //   joinDate: new Date(2023, 3, 10),
+  // },
+  // {
+  //   id: 5,
+  //   name: "Michael Wilson",
+  //   email: "michael@example.com",
+  //   phone: "+1 (555) 876-5432",
+  //   role: "guest",
+  //   status: "blocked",
+  //   reservations: 2,
+  //   joinDate: new Date(2022, 8, 18),
+  // },
 ];
 
 export default function AdminUsers() {
@@ -314,7 +314,7 @@ export default function AdminUsers() {
               Add, edit, or remove users from the system
             </CardDescription>
           </div>
-          <Button onClick={handleAddUser} className="sm:self-end">
+          <Button disabled onClick={handleAddUser} className="sm:self-end">
             <Plus className="mr-2 h-4 w-4" /> Add New User
           </Button>
         </div>
@@ -384,7 +384,9 @@ export default function AdminUsers() {
               ) : (
                 <TableRow>
                   <TableCell colSpan={6} className="h-24 text-center">
-                    No users found.
+                    <Badge variant="secondary" className="text-xs ml-1">
+                      Terminar en Sprint #4 ✅
+                    </Badge>
                   </TableCell>
                 </TableRow>
               )}

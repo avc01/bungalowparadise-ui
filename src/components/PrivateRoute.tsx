@@ -9,9 +9,8 @@ type Props = {
 };
 
 export default function PrivateRoute({ children, adminOnly = false }: Props) {
-  const { user, loading } = useAuth();
-debugger;
-  // Puedes activar este loader si quieres
+  const { user } = useAuth();
+
   // if (loading) {
   //   return <div className="text-center mt-10">Cargando...</div>;
   // }

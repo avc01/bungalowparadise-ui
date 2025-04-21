@@ -59,56 +59,56 @@ const roomOptions = [
 
 // Mock reservation data
 const initialReservations: Reservation[] = [
-  {
-    rooms: [{ name: "Deluxe Ocean View", type: "deluxe" }],
-    checkIn: addDays(new Date(), 30),
-    checkOut: addDays(new Date(), 35),
-    numberOfGuests: 2,
-    totalPrice: 1495,
-    status: "Confirmed",
-    location: "North Wing, Floor 3",
-    reservationId: "res-001",
-  },
-  {
-    rooms: [
-      { name: "Premium Garden Suite", type: "suite" },
-      { name: "Family Bungalow", type: "bungalow" },
-    ],
-    checkIn: new Date(),
-    checkOut: addDays(new Date(), 5),
-    numberOfGuests: 3,
-    totalPrice: 1995,
-    status: "Completed",
-    location: "East Wing, Floor 2",
-    reservationId: "res-004",
-  },
-  {
-    rooms: [
-      { name: "Family Bungalow", type: "bungalow" },
-      { name: "Standard Garden View", type: "standard" },
-    ],
-    checkIn: subDays(new Date(), 20),
-    checkOut: subDays(new Date(), 15),
-    numberOfGuests: 6,
-    totalPrice: 3495,
-    status: "Cancelled",
-    location: "Beachfront Area",
-    reservationId: "res-003",
-  },
-  {
-    rooms: [
-      { name: "Standard Garden View", type: "standard" },
-      { name: "Deluxe Ocean View", type: "deluxe" },
-      { name: "Premium Garden Suite", type: "suite" },
-    ],
-    checkIn: subDays(new Date(), 60),
-    checkOut: subDays(new Date(), 57),
-    numberOfGuests: 7,
-    totalPrice: 2997,
-    status: "Confirmed",
-    location: "South Wing, Floor 1",
-    reservationId: "res-002",
-  },
+  // {
+  //   rooms: [{ name: "Deluxe Ocean View", type: "deluxe" }],
+  //   checkIn: addDays(new Date(), 30),
+  //   checkOut: addDays(new Date(), 35),
+  //   numberOfGuests: 2,
+  //   totalPrice: 1495,
+  //   status: "Confirmed",
+  //   location: "North Wing, Floor 3",
+  //   reservationId: "res-001",
+  // },
+  // {
+  //   rooms: [
+  //     { name: "Premium Garden Suite", type: "suite" },
+  //     { name: "Family Bungalow", type: "bungalow" },
+  //   ],
+  //   checkIn: new Date(),
+  //   checkOut: addDays(new Date(), 5),
+  //   numberOfGuests: 3,
+  //   totalPrice: 1995,
+  //   status: "Completed",
+  //   location: "East Wing, Floor 2",
+  //   reservationId: "res-004",
+  // },
+  // {
+  //   rooms: [
+  //     { name: "Family Bungalow", type: "bungalow" },
+  //     { name: "Standard Garden View", type: "standard" },
+  //   ],
+  //   checkIn: subDays(new Date(), 20),
+  //   checkOut: subDays(new Date(), 15),
+  //   numberOfGuests: 6,
+  //   totalPrice: 3495,
+  //   status: "Cancelled",
+  //   location: "Beachfront Area",
+  //   reservationId: "res-003",
+  // },
+  // {
+  //   rooms: [
+  //     { name: "Standard Garden View", type: "standard" },
+  //     { name: "Deluxe Ocean View", type: "deluxe" },
+  //     { name: "Premium Garden Suite", type: "suite" },
+  //   ],
+  //   checkIn: subDays(new Date(), 60),
+  //   checkOut: subDays(new Date(), 57),
+  //   numberOfGuests: 7,
+  //   totalPrice: 2997,
+  //   status: "Confirmed",
+  //   location: "South Wing, Floor 1",
+  //   reservationId: "res-002",
+  // },
 ];
 
 export default function AdminReservations() {
@@ -342,7 +342,7 @@ export default function AdminReservations() {
               View, add, edit, or cancel guest reservations
             </CardDescription>
           </div>
-          <Button onClick={handleAddReservation} className="sm:self-end">
+          <Button disabled onClick={handleAddReservation} className="sm:self-end">
             <Plus className="mr-2 h-4 w-4" /> Add New Reservation
           </Button>
         </div>
@@ -422,7 +422,9 @@ export default function AdminReservations() {
               ) : (
                 <TableRow>
                   <TableCell colSpan={8} className="h-24 text-center">
-                    No reservations found.
+                    <Badge variant="secondary" className="text-xs ml-1">
+                      Terminar en Sprint #4 ✅
+                    </Badge>
                   </TableCell>
                 </TableRow>
               )}

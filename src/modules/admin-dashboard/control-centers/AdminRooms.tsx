@@ -35,7 +35,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Search, Plus, Pencil, Trash2, ImageIcon } from "lucide-react";
+import { Search, Plus, Pencil, Trash2 } from "lucide-react";
 import api from "@/lib/api";
 
 // Room type definition
@@ -45,61 +45,14 @@ type Room = {
   description: string;
   price: number;
   imageUrl: string[];
-  type: string;
+  type: "Single" | "Double" | "Suite";
   guestsPerRoom: number;
   bathrooms: number;
   status: "Available" | "Maintenance";
   roomNumber?: string;
   beds?: number;
+  imageUrlsToSave?: File[]; // For file upload
 };
-
-// Mock room data
-// const initialRooms: Room[] = [
-//   {
-//     id: 1,
-//     name: "Deluxe Ocean View",
-//     description: "Spacious room with stunning ocean views and private balcony",
-//     price: 299,
-//     image: "/placeholder.svg?height=300&width=500",
-//     type: "deluxe",
-//     capacity: 2,
-//     bathrooms: 1,
-//     status: "available",
-//   },
-//   {
-//     id: 2,
-//     name: "Premium Garden Suite",
-//     description: "Elegant suite overlooking our tropical gardens",
-//     price: 399,
-//     image: "/placeholder.svg?height=300&width=500",
-//     type: "suite",
-//     capacity: 3,
-//     bathrooms: 1,
-//     status: "booked",
-//   },
-//   {
-//     id: 3,
-//     name: "Family Bungalow",
-//     description: "Perfect for families with separate living area",
-//     price: 499,
-//     image: "/placeholder.svg?height=300&width=500",
-//     type: "bungalow",
-//     capacity: 4,
-//     bathrooms: 2,
-//     status: "available",
-//   },
-//   {
-//     id: 4,
-//     name: "Honeymoon Villa",
-//     description: "Romantic villa with private plunge pool",
-//     price: 599,
-//     image: "/placeholder.svg?height=300&width=500",
-//     type: "villa",
-//     capacity: 2,
-//     bathrooms: 1,
-//     status: "maintenance",
-//   },
-// ];
 
 export default function AdminRooms() {
   const [rooms, setRooms] = useState<Room[]>([]);
@@ -112,14 +65,15 @@ export default function AdminRooms() {
     name: "",
     description: "",
     price: 0,
-    imageUrl: ["/placeholder.svg?height=300&width=500"],
-    type: "standard",
-    guestsPerRoom: 2,
-    bathrooms: 1,
+    imageUrl: [],
+    type: "Single",
+    guestsPerRoom: 0,
+    bathrooms: 0,
     status: "Available",
-    beds: 1,
+    beds: 0,
     roomNumber: "",
     id: 0,
+    imageUrlsToSave: [], // For file upload
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -133,14 +87,27 @@ export default function AdminRooms() {
 
   // Handle form input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]:
-        name === "price" || name === "capacity" || name === "bathrooms"
-          ? Number(value)
-          : value,
-    }));
+    const { name, value, type, files } = e.target;
+
+    if (type === "file" && files) {
+      // For multiple files
+      setFormData((prev) => ({
+        ...prev,
+        imageUrlsToSave: Array.from(files), // 👈 Store File[] directly
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]:
+          name === "price" ||
+          name === "capacity" ||
+          name === "bathrooms" ||
+          name === "beds" ||
+          name === "guestsPerRoom"
+            ? Number(value)
+            : value,
+      }));
+    }
   };
 
   // Handle select changes
@@ -148,20 +115,20 @@ export default function AdminRooms() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Open add dialog
   const handleAddRoom = () => {
     setFormData({
       name: "",
       description: "",
       price: 0,
-      imageUrl: ["/placeholder.svg?height=300&width=500"],
-      type: "standard",
-      guestsPerRoom: 2,
-      bathrooms: 1,
+      imageUrl: [],
+      type: "Single",
+      guestsPerRoom: 0,
+      bathrooms: 0,
       status: "Available",
-      beds: 1,
+      beds: 0,
       roomNumber: "",
       id: 0,
+      imageUrlsToSave: [], // For file upload
     });
     setIsAddDialogOpen(true);
   };
@@ -180,103 +147,139 @@ export default function AdminRooms() {
   };
 
   // Submit add form
-  const handleAddSubmit = () => {
+  const handleAddSubmit = async () => {
     setIsSubmitting(true);
 
-    // Validate form
+    // Validate required fields
     if (
       !formData.name ||
       !formData.description ||
       formData.price === undefined
     ) {
-      toast("Validation Error", {
-        description: "Please fill in all required fields",
+      toast("Error de Validación", {
+        description: "Por favor, completa todos los campos requeridos",
       });
       setIsSubmitting(false);
       return;
     }
 
-    // Simulate API call
-    // setTimeout(() => {
-    //   const newRoom: Room = {
-    //     id: Math.max(...rooms.map((r) => r.id)) + 1,
-    //     name: formData.name!,
-    //     description: formData.description!,
-    //     price: formData.price!,
-    //     image: formData.image || "/placeholder.svg?height=300&width=500",
-    //     type: formData.type || "standard",
-    //     capacity: formData.capacity || 2,
-    //     bathrooms: formData.bathrooms || 1,
-    //     status:
-    //       (formData.status as "available" | "maintenance" | "booked") ||
-    //       "available",
-    //   };
+    const payload = new FormData();
 
-    //   setRooms((prev) => [...prev, newRoom]);
-    //   setIsSubmitting(false);
-    //   setIsAddDialogOpen(false);
+    // Map Room model fields to SaveRoomDto names (must match backend DTO property names)
+    payload.append("Name", formData.name);
+    payload.append("Description", formData.description);
+    payload.append("Price", formData.price.toString());
+    payload.append("RoomNumber", formData.roomNumber ?? "");
+    payload.append("Type", formData.type ?? "Single");
+    payload.append("Status", formData.status ?? "Available");
+    payload.append("Bathrooms", (formData.bathrooms ?? 1).toString());
+    payload.append("Beds", (formData.beds ?? 1).toString());
+    payload.append("GuestsPerRoom", (formData.guestsPerRoom ?? 2).toString());
 
-    //   toast(`${newRoom.name} has been added successfully.`, {
-    //     description: "Room Added",
-    //   });
-    // }, 1000);
+    // Attach all selected images using the key the backend expects
+    if (formData.imageUrlsToSave && formData.imageUrlsToSave.length > 0) {
+      formData.imageUrlsToSave.forEach((file) => {
+        payload.append("images", file); // ✅ this matches: List<IFormFile> images
+      });
+    }
+
+    try {
+      await api.post("/api/room/upload", payload, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      // ✅ Reload rooms from backend
+      fetchRooms();
+
+      toast.success("La habitación ha sido añadida correctamente.", {
+        description: "Subida completada",
+      });
+
+      // Optionally: reset form or reload data
+      setIsAddDialogOpen(false);
+    } catch (error) {
+      toast.error("Error al subir archivo", {
+        description: "Por favor, intenta nuevamente.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  // Submit edit form
-  const handleEditSubmit = () => {
+  const handleEditSubmit = async () => {
     setIsSubmitting(true);
 
-    // Validate form
     if (
       !formData.name ||
       !formData.description ||
       formData.price === undefined
     ) {
-      toast("Validation Error", {
-        description: "Please fill in all required fields",
+      toast("Error de Validación", {
+        description: "Por favor, completa todos los campos requeridos",
       });
+
       setIsSubmitting(false);
       return;
     }
 
-    // Simulate API call
-    // setTimeout(() => {
-    //   setRooms((prev) =>
-    //     prev.map((room) =>
-    //       room.id === currentRoom?.id
-    //         ? {
-    //             ...room,
-    //             ...formData,
-    //             price: formData.price!,
-    //             capacity: formData.capacity!,
-    //             bathrooms: formData.bathrooms!,
-    //           }
-    //         : room
-    //     )
-    //   );
-    //   setIsSubmitting(false);
-    //   setIsEditDialogOpen(false);
+    const payload = new FormData();
 
-    //   toast(`${formData.name} has been updated successfully.`, {
-    //     description: "Room Updated",
-    //   });
-    // }, 1000);
+    payload.append("Id", (formData.id ?? 0).toString());
+    payload.append("Name", formData.name);
+    payload.append("RoomNumber", formData.roomNumber ?? "");
+    payload.append("Description", formData.description);
+    payload.append("Price", formData.price.toString());
+    payload.append("Type", formData.type?.toString() ?? "Single");
+    payload.append("Status", formData.status?.toString() ?? "Available");
+    payload.append("Bathrooms", (formData.bathrooms ?? 1).toString());
+    payload.append("Beds", (formData.beds ?? 1).toString());
+    payload.append("GuestsPerRoom", (formData.guestsPerRoom ?? 2).toString());
+
+    // Attach images (if any)
+    formData.imageUrlsToSave?.forEach((file) => {
+      payload.append("Images", file);
+    });
+
+    try {
+      await api.put("/api/room/admin/update", payload, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      toast.success("Habitación actualizada correctamente");
+
+      // ✅ Reload rooms from backend
+      fetchRooms();
+      setIsEditDialogOpen(false);
+    } catch (err) {
+      toast.error("Error al actualizar la habitación");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Submit delete
   const handleDeleteSubmit = () => {
     setIsSubmitting(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      setRooms((prev) => prev.filter((room) => room.id !== currentRoom?.id));
-      setIsSubmitting(false);
-      setIsDeleteDialogOpen(false);
+    api
+      .delete(`api/room/${currentRoom?.id}`)
+      .then(() => {
+        toast(`${currentRoom?.name} ha sido eliminada correctamente.`, {
+          description: "Habitación Eliminada",
+        });
 
-      toast(`${currentRoom?.name} has been deleted successfully.`, {
-        description: "Room Deleted",
+        // ✅ Reload rooms from backend
+        fetchRooms();
+      })
+      .catch(() => {
+        toast.error(`Error al eliminar ${currentRoom?.name}`, {
+          description: "La habitación no fue eliminada",
+        });
+      })
+      .finally(() => {
+        setIsDeleteDialogOpen(false);
+        setIsSubmitting(false);
       });
-    }, 1000);
   };
 
   // Get status badge color
@@ -293,61 +296,72 @@ export default function AdminRooms() {
     }
   };
 
-  useEffect(() => {
+  const fetchRooms = () => {
     api
       .get("api/Room/admin/rooms")
       .then((res) => {
-        debugger;
-        setRooms(res.data)
+        setRooms(res.data);
       })
       .catch((err) => {
         setRooms([]);
-        toast("Error fetching rooms", {
-          description: `Unable to load room data. Please try again later. ${err.message}`,
+        toast("Error al obtener habitaciones", {
+          description: `No se pudo cargar la información de las habitaciones. Por favor, intenta nuevamente más tarde. ${err.message}`,
         });
       });
+  };
+
+  useEffect(() => {
+    fetchRooms();
   }, []);
 
   return (
     <Card>
-      <CardHeader className="pb-3">
+      <CardHeader className="pb-4 border-b border-border">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <CardTitle>Manage Rooms</CardTitle>
-            <CardDescription>
-              Add, edit, or remove rooms from your inventory
+            <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
+              Administrar Habitaciones
+            </CardTitle>
+            <CardDescription className="text-muted-foreground max-w-md">
+              Añade, edita o elimina habitaciones del inventario del hotel
             </CardDescription>
           </div>
-          <Button onClick={handleAddRoom} className="sm:self-end">
-            <Plus className="mr-2 h-4 w-4" /> Add New Room
+          <Button
+            onClick={handleAddRoom}
+            className="bg-primary text-primary-foreground hover:brightness-110 transition duration-200"
+          >
+            <Plus className="mr-2 h-4 w-4" /> Añadir Nueva Habitación
           </Button>
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="mb-4 relative">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+
+      <CardContent className="space-y-6 mt-2">
+        {/* Search Input */}
+        <div className="relative max-w-md">
+          <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search rooms..."
+            placeholder="Buscar habitaciones..."
             className="pl-9"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
 
-        <div className="rounded-md border">
+        {/* Table */}
+        <div className="overflow-x-auto rounded-xl border border-border shadow-sm bg-background/50 backdrop-blur-sm">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Price</TableHead>
-                <TableHead>RoomNumber</TableHead>
-                <TableHead>Capacity</TableHead>
-                <TableHead>Bathrooms</TableHead>
-                <TableHead>Beds</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Images on Display</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+              <TableRow className="bg-muted/40">
+                <TableHead className="text-primary">Nombre</TableHead>
+                <TableHead>Tipo</TableHead>
+                <TableHead>Precio</TableHead>
+                <TableHead>Número</TableHead>
+                <TableHead>Capacidad</TableHead>
+                <TableHead>Baños</TableHead>
+                <TableHead>Camas</TableHead>
+                <TableHead>Estado</TableHead>
+                <TableHead>Imágenes</TableHead>
+                <TableHead className="text-right">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -358,22 +372,22 @@ export default function AdminRooms() {
                     <TableCell className="capitalize">{room.type}</TableCell>
                     <TableCell>💲{room.price}</TableCell>
                     <TableCell>🚪{room.roomNumber}</TableCell>
-                    <TableCell>{room.guestsPerRoom} guests</TableCell>
-                    <TableCell>{room.bathrooms}🚽</TableCell>
-                    <TableCell>{room.beds}🛏️</TableCell>
+                    <TableCell>{room.guestsPerRoom} huésped(es)</TableCell>
+                    <TableCell>{room.bathrooms} 🚽</TableCell>
+                    <TableCell>{room.beds} 🛏️</TableCell>
                     <TableCell>
                       <Badge className={getStatusColor(room.status)}>
                         {room.status}
                       </Badge>
                     </TableCell>
-                    <TableCell>{room.imageUrl.length}🖼️</TableCell>
+                    <TableCell>{room.imageUrl.length} 🖼️</TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
                         <Button
                           variant="ghost"
                           size="icon"
                           onClick={() => handleEditRoom(room)}
-                          className="h-8 w-8"
+                          className="h-8 w-8 hover:bg-muted"
                         >
                           <Pencil className="h-4 w-4" />
                         </Button>
@@ -391,8 +405,11 @@ export default function AdminRooms() {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={6} className="h-24 text-center">
-                    No rooms found.
+                  <TableCell
+                    colSpan={10}
+                    className="h-24 text-center text-muted-foreground"
+                  >
+                    No se encontraron habitaciones.
                   </TableCell>
                 </TableRow>
               )}
@@ -401,20 +418,21 @@ export default function AdminRooms() {
         </div>
       </CardContent>
 
-      {/* Add Room Dialog */}
+      {/* Diálogo para Añadir Habitación */}
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>Add New Room</DialogTitle>
+            <DialogTitle>Añadir Nueva Habitación</DialogTitle>
             <DialogDescription>
-              Enter the details for the new room.
+              Ingresa los detalles de la nueva habitación.
             </DialogDescription>
           </DialogHeader>
 
           <div className="grid gap-4 py-4">
+            {/* Nombre */}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="name" className="text-right">
-                Name
+                Nombre
               </Label>
               <Input
                 id="name"
@@ -425,9 +443,10 @@ export default function AdminRooms() {
               />
             </div>
 
+            {/* Descripción */}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="description" className="text-right">
-                Description
+                Descripción
               </Label>
               <Input
                 id="description"
@@ -438,9 +457,10 @@ export default function AdminRooms() {
               />
             </div>
 
+            {/* Precio */}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="price" className="text-right">
-                Price
+                Precio
               </Label>
               <Input
                 id="price"
@@ -452,44 +472,59 @@ export default function AdminRooms() {
               />
             </div>
 
+            {/* Número de Habitación */}
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="type" className="text-right">
-                Type
-              </Label>
-              <Select
-                value={formData.type || "standard"}
-                onValueChange={(value) => handleSelectChange("type", value)}
-              >
-                <SelectTrigger className="col-span-3">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="standard">Standard</SelectItem>
-                  <SelectItem value="deluxe">Deluxe</SelectItem>
-                  <SelectItem value="suite">Suite</SelectItem>
-                  <SelectItem value="bungalow">Bungalow</SelectItem>
-                  <SelectItem value="villa">Villa</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="capacity" className="text-right">
-                Capacity
+              <Label htmlFor="roomNumber" className="text-right">
+                Número de Habitación
               </Label>
               <Input
-                id="capacity"
-                name="capacity"
-                type="number"
-                value={formData.guestsPerRoom || ""}
+                id="roomNumber"
+                name="roomNumber"
+                value={formData.roomNumber || ""}
                 onChange={handleInputChange}
                 className="col-span-3"
               />
             </div>
 
+            {/* Tipo */}
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label className="text-right">Tipo</Label>
+              <Select
+                value={formData.type || "Single"}
+                onValueChange={(value) => handleSelectChange("type", value)}
+              >
+                <SelectTrigger className="col-span-3">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-white rounded-md shadow-md text-foreground">
+                  <SelectItem value="Suite">Suite</SelectItem>
+                  <SelectItem value="Single">Single</SelectItem>
+                  <SelectItem value="Double">Double</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Estado */}
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label className="text-right">Estado</Label>
+              <Select
+                value={formData.status || "Available"}
+                onValueChange={(value) => handleSelectChange("status", value)}
+              >
+                <SelectTrigger className="col-span-3">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-white rounded-md shadow-md text-foreground">
+                  <SelectItem value="Available">Available</SelectItem>
+                  <SelectItem value="Maintenance">Maintenance</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Baños */}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="bathrooms" className="text-right">
-                Bathrooms
+                Baños
               </Label>
               <Input
                 id="bathrooms"
@@ -501,75 +536,111 @@ export default function AdminRooms() {
               />
             </div>
 
+            {/* Camas */}
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="status" className="text-right">
-                Status
+              <Label htmlFor="beds" className="text-right">
+                Camas
               </Label>
-              <Select
-                value={formData.status || "available"}
-                onValueChange={(value) => handleSelectChange("status", value)}
-              >
-                <SelectTrigger className="col-span-3">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="available">Available</SelectItem>
-                  <SelectItem value="maintenance">Maintenance</SelectItem>
-                  <SelectItem value="booked">Booked</SelectItem>
-                </SelectContent>
-              </Select>
+              <Input
+                id="beds"
+                name="beds"
+                type="number"
+                value={formData.beds || ""}
+                onChange={handleInputChange}
+                className="col-span-3"
+              />
             </div>
 
+            {/* Capacidad */}
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="image" className="text-right">
-                Image
+              <Label htmlFor="guestsPerRoom" className="text-right">
+                Capacidad
               </Label>
-              <div className="col-span-3 flex gap-2">
-                <Input
-                  id="image"
-                  name="image"
-                  value={formData.imageUrl || ""}
-                  onChange={handleInputChange}
-                  className="flex-1"
-                  disabled
-                />
-                <Button
-                  variant="outline"
-                  size="icon"
-                  disabled
-                  className="flex-shrink-0"
+              <Input
+                id="guestsPerRoom"
+                name="guestsPerRoom"
+                type="number"
+                value={formData.guestsPerRoom || ""}
+                onChange={handleInputChange}
+                className="col-span-3"
+              />
+            </div>
+
+            {/* Subir Imágenes */}
+            <div className="grid grid-cols-4 items-start gap-4">
+              <Label htmlFor="images" className="text-right pt-2">
+                Imágenes
+              </Label>
+
+              <div className="col-span-3">
+                <label
+                  htmlFor="images"
+                  className="flex items-center justify-center w-full px-4 py-10 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer text-center hover:bg-muted transition"
                 >
-                  <ImageIcon className="h-4 w-4" />
-                </Button>
+                  <span className="text-sm text-muted-foreground">
+                    Haz clic para seleccionar o arrastra las imágenes (JPG, PNG)
+                  </span>
+                </label>
+                <Input
+                  id="images"
+                  name="imageUrlsToSave"
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={handleInputChange}
+                  className="hidden"
+                />
+                {formData.imageUrlsToSave &&
+                  formData.imageUrlsToSave.length > 0 && (
+                    <p className="text-sm text-gray-500 mt-2">
+                      {formData.imageUrlsToSave.length} archivo(s)
+                      seleccionado(s)
+                    </p>
+                  )}
               </div>
             </div>
           </div>
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
-              Cancel
+              Cancelar
             </Button>
             <Button onClick={handleAddSubmit} disabled={isSubmitting}>
-              {isSubmitting ? "Adding..." : "Add Room"}
+              {isSubmitting ? "Agregando..." : "Añadir Habitación"}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Edit Room Dialog */}
+      {/* Diálogo para Editar Habitación */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>Edit Room</DialogTitle>
+            <DialogTitle>Editar Habitación</DialogTitle>
             <DialogDescription>
-              Update the details for this room.
+              Actualiza los detalles de esta habitación.
             </DialogDescription>
           </DialogHeader>
 
           <div className="grid gap-4 py-4">
+            {/* Número de Habitación */}
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="edit-roomNumber" className="text-right">
+                Habitación #
+              </Label>
+              <Input
+                id="edit-roomNumber"
+                name="roomNumber"
+                value={formData.roomNumber || ""}
+                onChange={handleInputChange}
+                className="col-span-3"
+              />
+            </div>
+
+            {/* Nombre */}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="edit-name" className="text-right">
-                Name
+                Nombre
               </Label>
               <Input
                 id="edit-name"
@@ -580,9 +651,10 @@ export default function AdminRooms() {
               />
             </div>
 
+            {/* Descripción */}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="edit-description" className="text-right">
-                Description
+                Descripción
               </Label>
               <Input
                 id="edit-description"
@@ -593,9 +665,10 @@ export default function AdminRooms() {
               />
             </div>
 
+            {/* Precio */}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="edit-price" className="text-right">
-                Price
+                Precio
               </Label>
               <Input
                 id="edit-price"
@@ -607,34 +680,34 @@ export default function AdminRooms() {
               />
             </div>
 
+            {/* Tipo */}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="edit-type" className="text-right">
-                Type
+                Tipo
               </Label>
               <Select
-                value={formData.type || "standard"}
+                value={formData.type || "Single"}
                 onValueChange={(value) => handleSelectChange("type", value)}
               >
                 <SelectTrigger className="col-span-3">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="standard">Standard</SelectItem>
-                  <SelectItem value="deluxe">Deluxe</SelectItem>
-                  <SelectItem value="suite">Suite</SelectItem>
-                  <SelectItem value="bungalow">Bungalow</SelectItem>
-                  <SelectItem value="villa">Villa</SelectItem>
+                  <SelectItem value="Single">Single</SelectItem>
+                  <SelectItem value="Suite">Suite</SelectItem>
+                  <SelectItem value="Double">Double</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
+            {/* Capacidad */}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="edit-capacity" className="text-right">
-                Capacity
+                Capacidad
               </Label>
               <Input
                 id="edit-capacity"
-                name="capacity"
+                name="guestsPerRoom"
                 type="number"
                 value={formData.guestsPerRoom || ""}
                 onChange={handleInputChange}
@@ -642,9 +715,10 @@ export default function AdminRooms() {
               />
             </div>
 
+            {/* Baños */}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="edit-bathrooms" className="text-right">
-                Bathrooms
+                Baños
               </Label>
               <Input
                 id="edit-bathrooms"
@@ -656,23 +730,62 @@ export default function AdminRooms() {
               />
             </div>
 
+            {/* Camas */}
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="edit-beds" className="text-right">
+                Camas
+              </Label>
+              <Input
+                id="edit-beds"
+                name="beds"
+                type="number"
+                value={formData.beds || ""}
+                onChange={handleInputChange}
+                className="col-span-3"
+              />
+            </div>
+
+            {/* Estado */}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="edit-status" className="text-right">
-                Status
+                Estado
               </Label>
               <Select
-                value={formData.status || "available"}
+                value={formData.status || "Available"}
                 onValueChange={(value) => handleSelectChange("status", value)}
               >
                 <SelectTrigger className="col-span-3">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="available">Available</SelectItem>
-                  <SelectItem value="maintenance">Maintenance</SelectItem>
-                  <SelectItem value="booked">Booked</SelectItem>
+                  <SelectItem value="Available">Available</SelectItem>
+                  <SelectItem value="Maintenance">Maintenance</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            {/* Subir Imágenes */}
+            <div className="grid grid-cols-4 items-start gap-4">
+              <Label htmlFor="edit-images" className="text-right pt-2">
+                Nuevas Imágenes
+              </Label>
+              <div className="col-span-3">
+                <Input
+                  id="edit-images"
+                  type="file"
+                  name="imageUrlsToSave"
+                  multiple
+                  accept="image/*"
+                  onChange={handleInputChange}
+                />
+                {formData.imageUrlsToSave &&
+                  formData.imageUrlsToSave?.length > 0 && (
+                    <p className="text-sm text-gray-500 mt-2">
+                      {formData.imageUrlsToSave.length} archivo(s)
+                      seleccionado(s)
+                    </p>
+                  )}
+              </div>
             </div>
           </div>
 
@@ -681,23 +794,23 @@ export default function AdminRooms() {
               variant="outline"
               onClick={() => setIsEditDialogOpen(false)}
             >
-              Cancel
+              Cancelar
             </Button>
             <Button onClick={handleEditSubmit} disabled={isSubmitting}>
-              {isSubmitting ? "Saving..." : "Save Changes"}
+              {isSubmitting ? "Guardando..." : "Guardar Cambios"}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Delete Room Dialog */}
+      {/* Diálogo de Eliminación de Habitación */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Delete Room</DialogTitle>
+            <DialogTitle>Eliminar Habitación</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete {currentRoom?.name}? This action
-              cannot be undone.
+              ¿Estás seguro de que deseas eliminar {currentRoom?.name}? Esta
+              acción no se puede deshacer.
             </DialogDescription>
           </DialogHeader>
 
@@ -706,14 +819,14 @@ export default function AdminRooms() {
               variant="outline"
               onClick={() => setIsDeleteDialogOpen(false)}
             >
-              Cancel
+              Cancelar
             </Button>
             <Button
               variant="destructive"
               onClick={handleDeleteSubmit}
               disabled={isSubmitting}
             >
-              {isSubmitting ? "Deleting..." : "Delete Room"}
+              {isSubmitting ? "Eliminando..." : "Eliminar Habitación"}
             </Button>
           </DialogFooter>
         </DialogContent>

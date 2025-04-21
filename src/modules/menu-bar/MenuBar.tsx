@@ -252,7 +252,7 @@ export default function MenuBar() {
                 <MenubarTrigger className="transition-colors hover:text-accent hover:underline">
                   Opciones de Usuario
                 </MenubarTrigger>
-                <MenubarContent>
+                <MenubarContent className="bg-white rounded-md shadow-md text-foreground">
                   {/* User Role Options */}
                   {user.role === "User" && (
                     <>
