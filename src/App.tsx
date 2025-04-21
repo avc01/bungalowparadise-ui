@@ -12,6 +12,7 @@ import { Toaster } from "@/components/ui/sonner";
 import PaymentMethodPage from "./modules/user-options/cards/PaymentMethodPage";
 import UserReviewPage from "./modules/user-options/reviews/UserReviewPage";
 import ReservationsPage from "./modules/user-options/reservations/ReservationPage";
+import AdminDashboard from "./modules/admin-dashboard/AdminDashboard";
 
 function App() {
   return (
@@ -67,7 +68,7 @@ function App() {
             path="/admin/dashboard"
             element={
               <PrivateRoute adminOnly>
-                <div className="p-4">Bienvenido al Panel de Administración</div>
+                <AdminDashboard />
               </PrivateRoute>
             }
           />
